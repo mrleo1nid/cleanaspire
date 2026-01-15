@@ -27,9 +27,6 @@ services:
       - Authentication__Microsoft__ClientId=${MICROSOFT_CLIENT_ID}
       - Authentication__Microsoft__ClientSecret=${MICROSOFT_CLIENT_SECRET}
       - Authentication__Microsoft__TenantId=${MICROSOFT_TENANT_ID}
-      - Webpushr__Token=${WEBPUSHR_TOKEN}
-      - Webpushr__ApiKey=${WEBPUSHR_API_KEY}
-      - Webpushr__PublicKey=${WEBPUSHR_PUBLIC_KEY}
       - Minio__Endpoint=${MINIO_ENDPOINT}
       - Minio__AccessKey=${MINIO_ACCESS_KEY}
       - Minio__SecretKey=${MINIO_SECRET_KEY}

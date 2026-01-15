@@ -72,7 +72,6 @@ All configuration is done through the `.env` file. Key settings include:
 - **Database**: Uses SQLite for development (default)
 - **Authentication**: Configure Google and Microsoft OAuth providers
 - **Email**: Set up SendGrid for email notifications
-- **Push Notifications**: Configure Webpushr for push notifications
 - **File Storage**: MinIO configuration for file uploads
 
 ### SSL Certificates

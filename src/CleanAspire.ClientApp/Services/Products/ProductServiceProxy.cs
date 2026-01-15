@@ -1,4 +1,4 @@
-﻿// This class acts as a service proxy for managing products, supporting both online and offline operations.
+// This class acts as a service proxy for managing products, supporting both online and offline operations.
 // It integrates caching, offline synchronization, and API interactions to enhance the application's reliability and user experience.
 
 // Purpose:
@@ -17,11 +17,9 @@
 using CleanAspire.Api.Client;
 using CleanAspire.Api.Client.Models;
 using CleanAspire.ClientApp.Services.JsInterop;
-using CleanAspire.ClientApp.Services.PushNotifications;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Kiota.Abstractions;
 using OneOf;
-
 
 namespace CleanAspire.ClientApp.Services.Products;
 
@@ -33,7 +31,6 @@ public class ProductServiceProxy
 {
     private readonly NavigationManager _navigationManager;
     private readonly ProductCacheService _productCacheService;
-    private readonly IWebpushrService _webpushrService;
     private readonly ApiClientServiceProxy _apiClientServiceProxy;
     private readonly ApiClient _apiClient;
     private readonly OnlineStatusInterop _onlineStatusInterop;
@@ -48,7 +45,6 @@ public class ProductServiceProxy
     /// </summary>
     /// <param name="navigationManager">The navigation manager.</param>
     /// <param name="productCacheService">The product cache service.</param>
-    /// <param name="webpushrService">The web push notification service.</param>
     /// <param name="apiClientServiceProxy">The API client service proxy.</param>
     /// <param name="apiClient">The API client.</param>
     /// <param name="onlineStatusInterop">The online status interop service.</param>
@@ -57,16 +53,15 @@ public class ProductServiceProxy
     public ProductServiceProxy(
         NavigationManager navigationManager,
         ProductCacheService productCacheService,
-        IWebpushrService webpushrService,
         ApiClientServiceProxy apiClientServiceProxy,
         ApiClient apiClient,
         OnlineStatusInterop onlineStatusInterop,
         OfflineModeState offlineModeState,
-        OfflineSyncService offlineSyncService)
+        OfflineSyncService offlineSyncService
+    )
     {
         _navigationManager = navigationManager;
         _productCacheService = productCacheService;
-        _webpushrService = webpushrService;
         _apiClientServiceProxy = apiClientServiceProxy;
         _apiClient = apiClient;
         _onlineStatusInterop = onlineStatusInterop;
@@ -104,7 +99,9 @@ public class ProductServiceProxy
     /// </summary>
     /// <param name="paginationQuery">The pagination query.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the paginated result of product DTO.</returns>
-    public async Task<PaginatedResultOfProductDto> GetPaginatedProductsAsync(ProductsWithPaginationQuery paginationQuery)
+    public async Task<PaginatedResultOfProductDto> GetPaginatedProductsAsync(
+        ProductsWithPaginationQuery paginationQuery
+    )
     {
         var isOnline = await _onlineStatusInterop.GetOnlineStatusAsync();
         var cacheKey = _productCacheService.GeneratePaginationCacheKey(paginationQuery);
@@ -115,10 +112,18 @@ public class ProductServiceProxy
         }
         try
         {
-            var paginatedProducts = await _apiClientServiceProxy.QueryAsync($"_{cacheKey}", () => _apiClient.Products.Pagination.PostAsync(paginationQuery), tags: _cacheTags, expiration: _cacheExpiration);
+            var paginatedProducts = await _apiClientServiceProxy.QueryAsync(
+                $"_{cacheKey}",
+                () => _apiClient.Products.Pagination.PostAsync(paginationQuery),
+                tags: _cacheTags,
+                expiration: _cacheExpiration
+            );
             if (paginatedProducts != null && _offlineModeState.Enabled)
             {
-                await _productCacheService.SaveOrUpdatePaginatedProductsAsync(cacheKey, paginatedProducts);
+                await _productCacheService.SaveOrUpdatePaginatedProductsAsync(
+                    cacheKey,
+                    paginatedProducts
+                );
                 foreach (var productDto in paginatedProducts.Items)
                 {
                     await _productCacheService.SaveOrUpdateProductAsync(productDto);
@@ -151,7 +156,12 @@ public class ProductServiceProxy
         }
         try
         {
-            var product = await _apiClientServiceProxy.QueryAsync($"_{productId}", () => _apiClient.Products[productId].GetAsync(), tags: _cacheTags, expiration: _cacheExpiration);
+            var product = await _apiClientServiceProxy.QueryAsync(
+                $"_{productId}",
+                () => _apiClient.Products[productId].GetAsync(),
+                tags: _cacheTags,
+                expiration: _cacheExpiration
+            );
             if (product != null && _offlineModeState.Enabled)
             {
                 await _productCacheService.SaveOrUpdateProductAsync(product);
@@ -160,7 +170,9 @@ public class ProductServiceProxy
         }
         catch
         {
-            return new KeyNotFoundException($"Product '{productId}' could not be fetched from API.");
+            return new KeyNotFoundException(
+                $"Product '{productId}' could not be fetched from API."
+            );
         }
     }
 
@@ -169,7 +181,9 @@ public class ProductServiceProxy
     /// </summary>
     /// <param name="command">The create product command.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the product DTO or error details.</returns>
-    public async Task<OneOf<ProductDto, HttpValidationProblemDetails, ProblemDetails>> CreateProductAsync(CreateProductCommand command)
+    public async Task<
+        OneOf<ProductDto, HttpValidationProblemDetails, ProblemDetails>
+    > CreateProductAsync(CreateProductCommand command)
     {
         var isOnline = await _onlineStatusInterop.GetOnlineStatusAsync();
         if (isOnline)
@@ -177,13 +191,6 @@ public class ProductServiceProxy
             try
             {
                 var response = await _apiClient.Products.PostAsync(command);
-                var baseUrl = _navigationManager.BaseUri.TrimEnd('/');
-                var productUrl = $"{baseUrl}/products/edit/{response.Id}";
-                await _webpushrService.SendNotificationAsync(
-                    "New Product Launched!",
-                    $"Our new product, {response.Name}, is now available. Click to learn more!",
-                    productUrl
-                );
                 await _apiClientServiceProxy.ClearCache(_cacheTags);
                 return response;
             }
@@ -197,19 +204,11 @@ public class ProductServiceProxy
             }
             catch (ApiException ex)
             {
-                return new ProblemDetails
-                {
-                    Title = ex.Message,
-                    Detail = ex.Message
-                };
+                return new ProblemDetails { Title = ex.Message, Detail = ex.Message };
             }
             catch (Exception ex)
             {
-                return new ProblemDetails
-                {
-                    Title = ex.Message,
-                    Detail = ex.Message
-                };
+                return new ProblemDetails { Title = ex.Message, Detail = ex.Message };
             }
         }
         else
@@ -227,11 +226,12 @@ public class ProductServiceProxy
                     Name = command.Name,
                     Price = command.Price,
                     Sku = command.Sku,
-                    Uom = command.Uom
+                    Uom = command.Uom,
                 };
                 await _productCacheService.SaveOrUpdateProductAsync(productDto);
 
-                var cachedPaginatedProducts = await _productCacheService.GetAllCachedPaginatedResultsAsync();
+                var cachedPaginatedProducts =
+                    await _productCacheService.GetAllCachedPaginatedResultsAsync();
                 if (cachedPaginatedProducts.Any())
                 {
                     foreach (var kvp in cachedPaginatedProducts)
@@ -239,7 +239,10 @@ public class ProductServiceProxy
                         var paginatedProducts = kvp.Value;
                         paginatedProducts.Items.Insert(0, productDto);
                         paginatedProducts.TotalItems++;
-                        await _productCacheService.SaveOrUpdatePaginatedProductsAsync(kvp.Key, paginatedProducts);
+                        await _productCacheService.SaveOrUpdatePaginatedProductsAsync(
+                            kvp.Key,
+                            paginatedProducts
+                        );
                     }
                 }
                 return productDto;
@@ -249,7 +252,8 @@ public class ProductServiceProxy
                 return new ProblemDetails
                 {
                     Title = "Offline mode is disabled.",
-                    Detail = "Offline mode is disabled. Please enable offline mode to create products in offline mode."
+                    Detail =
+                        "Offline mode is disabled. Please enable offline mode to create products in offline mode.",
                 };
             }
         }
@@ -260,7 +264,9 @@ public class ProductServiceProxy
     /// </summary>
     /// <param name="command">The update product command.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a boolean indicating success or error details.</returns>
-    public async Task<OneOf<bool, HttpValidationProblemDetails, ProblemDetails>> UpdateProductAsync(UpdateProductCommand command)
+    public async Task<OneOf<bool, HttpValidationProblemDetails, ProblemDetails>> UpdateProductAsync(
+        UpdateProductCommand command
+    )
     {
         var isOnline = await _onlineStatusInterop.GetOnlineStatusAsync();
         if (isOnline)
@@ -284,16 +290,12 @@ public class ProductServiceProxy
                 return new ProblemDetails
                 {
                     Title = ex.Message,
-                    Detail = ex.InnerException?.Message ?? ex.Message
+                    Detail = ex.InnerException?.Message ?? ex.Message,
                 };
             }
             catch (Exception ex)
             {
-                return new ProblemDetails
-                {
-                    Title = ex.Message,
-                    Detail = ex.Message
-                };
+                return new ProblemDetails { Title = ex.Message, Detail = ex.Message };
             }
         }
         else if (_offlineModeState.Enabled)
@@ -309,11 +311,12 @@ public class ProductServiceProxy
                 Name = command.Name,
                 Price = command.Price,
                 Sku = command.Sku,
-                Uom = command.Uom
+                Uom = command.Uom,
             };
             await _productCacheService.SaveOrUpdateProductAsync(productDto);
 
-            var cachedPaginatedProducts = await _productCacheService.GetAllCachedPaginatedResultsAsync();
+            var cachedPaginatedProducts =
+                await _productCacheService.GetAllCachedPaginatedResultsAsync();
             if (cachedPaginatedProducts != null && cachedPaginatedProducts.Any())
             {
                 foreach (var kvp in cachedPaginatedProducts)
@@ -331,7 +334,10 @@ public class ProductServiceProxy
                         item.Sku = productDto.Sku;
                         item.Uom = productDto.Uom;
                     }
-                    await _productCacheService.SaveOrUpdatePaginatedProductsAsync(kvp.Key, paginatedProducts);
+                    await _productCacheService.SaveOrUpdatePaginatedProductsAsync(
+                        kvp.Key,
+                        paginatedProducts
+                    );
                 }
             }
             return true;
@@ -339,7 +345,8 @@ public class ProductServiceProxy
         return new ProblemDetails
         {
             Title = "Offline mode is disabled.",
-            Detail = "Offline mode is disabled. Please enable offline mode to update products in offline mode."
+            Detail =
+                "Offline mode is disabled. Please enable offline mode to update products in offline mode.",
         };
     }
 
@@ -355,7 +362,9 @@ public class ProductServiceProxy
         {
             try
             {
-                await _apiClient.Products.DeleteAsync(new DeleteProductCommand() { Ids = productIds });
+                await _apiClient.Products.DeleteAsync(
+                    new DeleteProductCommand() { Ids = productIds }
+                );
                 await _productCacheService.UpdateDeletedProductsAsync(productIds);
                 await _apiClientServiceProxy.ClearCache(_cacheTags);
                 return true;
@@ -366,19 +375,11 @@ public class ProductServiceProxy
             }
             catch (ApiException ex)
             {
-                return new ProblemDetails
-                {
-                    Title = ex.Message,
-                    Detail = ex.Message
-                };
+                return new ProblemDetails { Title = ex.Message, Detail = ex.Message };
             }
             catch (Exception ex)
             {
-                return new ProblemDetails
-                {
-                    Title = ex.Message,
-                    Detail = ex.Message
-                };
+                return new ProblemDetails { Title = ex.Message, Detail = ex.Message };
             }
         }
         else if (_offlineModeState.Enabled)
@@ -391,7 +392,8 @@ public class ProductServiceProxy
         return new ProblemDetails
         {
             Title = "Offline mode is disabled.",
-            Detail = "Offline mode is disabled. Please enable offline mode to delete products in offline mode."
+            Detail =
+                "Offline mode is disabled. Please enable offline mode to delete products in offline mode.",
         };
     }
 
@@ -401,11 +403,21 @@ public class ProductServiceProxy
     /// <returns>A task that represents the asynchronous operation.</returns>
     public async Task SyncOfflineCachedDataAsync()
     {
-        var (totalCount, cachedCreateProductCommands, cachedUpdateProductCommands, cachedDeleteProductCommands) = await _productCacheService.GetAllPendingCommandsAsync();
+        var (
+            totalCount,
+            cachedCreateProductCommands,
+            cachedUpdateProductCommands,
+            cachedDeleteProductCommands
+        ) = await _productCacheService.GetAllPendingCommandsAsync();
         if (totalCount > 0)
         {
             var processedCount = 0;
-            _offlineSyncService.SetSyncStatus(SyncStatus.Syncing, $"Starting sync: 0/{totalCount} ...", totalCount, processedCount);
+            _offlineSyncService.SetSyncStatus(
+                SyncStatus.Syncing,
+                $"Starting sync: 0/{totalCount} ...",
+                totalCount,
+                processedCount
+            );
             await Task.Delay(500);
 
             async Task ProcessCommandsAsync<T>(IEnumerable<T> commands, Func<T, Task> action)
@@ -414,7 +426,12 @@ public class ProductServiceProxy
                 {
                     processedCount++;
                     await action(command);
-                    _offlineSyncService.SetSyncStatus(SyncStatus.Syncing, $"Syncing {processedCount}/{totalCount} Success.", totalCount, processedCount);
+                    _offlineSyncService.SetSyncStatus(
+                        SyncStatus.Syncing,
+                        $"Syncing {processedCount}/{totalCount} Success.",
+                        totalCount,
+                        processedCount
+                    );
                     await Task.Delay(500);
                 }
             }
@@ -431,10 +448,18 @@ public class ProductServiceProxy
 
             if (cachedDeleteProductCommands != null && cachedDeleteProductCommands.Any())
             {
-                await ProcessCommandsAsync(cachedDeleteProductCommands, command => DeleteProductsAsync(command.Ids));
+                await ProcessCommandsAsync(
+                    cachedDeleteProductCommands,
+                    command => DeleteProductsAsync(command.Ids)
+                );
             }
 
-            _offlineSyncService.SetSyncStatus(SyncStatus.Completed, $"Sync completed: {processedCount}/{totalCount} processed.", totalCount, processedCount);
+            _offlineSyncService.SetSyncStatus(
+                SyncStatus.Completed,
+                $"Sync completed: {processedCount}/{totalCount} processed.",
+                totalCount,
+                processedCount
+            );
             await Task.Delay(1200);
         }
         await _productCacheService.ClearCommands();
@@ -442,4 +467,3 @@ public class ProductServiceProxy
         _offlineSyncService.SetSyncStatus(SyncStatus.Idle, "", 0, 0);
     }
 }
-

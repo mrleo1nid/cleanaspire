@@ -59,15 +59,10 @@ By incorporating robust offline capabilities, CleanAspire empowers developers to
 7. **Cloud-Ready with Docker**  
    - Preconfigured for Docker, enabling easy deployment to cloud platforms or local environments.  
 
-8. **Real-Time Web Push Notifications**  
-   - Integrated **Webpushr** to deliver instant browser notifications.  
-   - Keeps users informed and engaged with real-time updates.  
-   - Fully customizable notifications with targeted delivery and analytics support.  
-
-9. **Integrated CI/CD Pipelines**  
+8. **Integrated CI/CD Pipelines**  
    - Includes GitHub Actions workflows for automated building, testing, and deployment.  
 
-10. **Offline Mode Support**  
+9. **Offline Mode Support**  
     - **Offline mode enabled by default** to provide a seamless experience even without internet access.  
     - Uses **IndexedDB** to cache data locally, allowing the application to retrieve data and function offline.  
     - The system detects the online/offline status and fetches data from **IndexedDB** when offline, ensuring uninterrupted access to key features.  
@@ -117,9 +112,6 @@ services:
       - SendGrid__DefaultFromEmail=noreply@blazorserver.com
       - Authentication__Google__ClientId=<your-client-id>
       - Authentication__Google__ClientSecret=<your-secret-key>
-      - Webpushr__Token=<your-webpushr-token>
-      - Webpushr__ApiKey=<your-webpushr-api-key>
-      - Webpushr__PublicKey=<your-webpushr-public-key>
       - Minio__Endpoint=<your-minio-server>
       - Minio__AccessKey=<your-minio-key>
       - Minio__SecretKey=<your-minio-secret>
@@ -200,36 +192,6 @@ networks:
 
 4. **Access the Application**:
    Open your browser and go to `https://localhost:5001` to see the Blazor WebAssembly PWA in action.
-
-### How to Register and Configure Webpushr
-
-1. **Register on Webpushr**  
-   - Visit the [Webpushr website](https://www.webpushr.com/) and sign up for an account.  
-   - Complete the registration process to access your dashboard.  
-
-2. **Obtain Required Keys**  
-   - Navigate to the API configuration section in your Webpushr dashboard.  
-   - Copy the following keys:  
-     - **Token**  
-     - **API Key**  
-     - **Public Key**  
-
-3. **Add Configuration to `appsettings.json`**  
-   Add the keys obtained from Webpushr into your application configuration file as follows:  
-   ```json
-   "Webpushr": {
-       "Token": "your-webpushr-token",
-       "APIKey": "your-webpushr-api-key",
-       "PublicKey": "your-webpushr-public-key"
-   }
-   ```
-
-4. **Integrate Webpushr in the Application**  
-   - Use the `PublicKey` for initializing Webpushr on the client-side to enable browser notifications.  
-   - Use the `Token` and `API Key` securely on the server-side for API communication with Webpushr.
-
-
-
 
 ### Steps to Add a New Entity Class
 

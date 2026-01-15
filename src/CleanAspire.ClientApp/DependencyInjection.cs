@@ -1,4 +1,3 @@
-﻿
 using System.Globalization;
 using Blazored.LocalStorage;
 using CleanAspire.Api.Client;
@@ -8,7 +7,6 @@ using CleanAspire.ClientApp.Services.Identity;
 using CleanAspire.ClientApp.Services.Interfaces;
 using CleanAspire.ClientApp.Services.JsInterop;
 using CleanAspire.ClientApp.Services.Products;
-using CleanAspire.ClientApp.Services.PushNotifications;
 using CleanAspire.ClientApp.Services.UserPreferences;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -21,7 +19,6 @@ using Microsoft.Kiota.Serialization.Multipart;
 using Microsoft.Kiota.Serialization.Text;
 using MudBlazor;
 using MudBlazor.Services;
-
 
 namespace CleanAspire.ClientApp;
 
@@ -53,17 +50,16 @@ public static class DependencyInjection
         #endregion
     }
 
-
-    public static void AddCoreServices(this IServiceCollection services, IConfiguration configuration)
+    public static void AddCoreServices(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
     {
-        
         // Cookie and Authentication Handlers
         services.AddTransient<CookieHandler>();
-        services.AddTransient<WebpushrAuthHandler>();
 
         // Scoped Services
         services.AddSingleton<LanguageService>();
-        services.AddSingleton<WebpushrOptionsCache>();
         services.AddScoped<UserProfileStore>();
         services.AddScoped<OnlineStatusInterop>();
         services.AddScoped<OfflineModeState>();
@@ -71,30 +67,33 @@ public static class DependencyInjection
         services.AddScoped<ProductCacheService>();
         services.AddScoped<ProductServiceProxy>();
         services.AddScoped<OfflineSyncService>();
-        services.AddScoped<IWebpushrService, WebpushrService>();
 
         // Configuration
-        var clientAppSettings = configuration.GetSection(ClientAppSettings.KEY).Get<ClientAppSettings>();
+        var clientAppSettings = configuration
+            .GetSection(ClientAppSettings.KEY)
+            .Get<ClientAppSettings>();
         services.AddSingleton(clientAppSettings!);
 
         // MudBlazor Integration
         services.TryAddMudBlazor(configuration);
-
     }
 
-    public static void AddHttpClients(this IServiceCollection services, IConfiguration configuration)
+    public static void AddHttpClients(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
     {
         // HttpClient Registration
-        services.AddHttpClient("apiservice", (sp, options) =>
-        {
-            var settings = sp.GetRequiredService<ClientAppSettings>();
-            options.BaseAddress = new Uri(settings.ServiceBaseUrl);
-        }).AddHttpMessageHandler<CookieHandler>();
-
-        services.AddHttpClient("Webpushr", client =>
-        {
-            client.BaseAddress = new Uri("https://api.webpushr.com");
-        }).AddHttpMessageHandler<WebpushrAuthHandler>();
+        services
+            .AddHttpClient(
+                "apiservice",
+                (sp, options) =>
+                {
+                    var settings = sp.GetRequiredService<ClientAppSettings>();
+                    options.BaseAddress = new Uri(settings.ServiceBaseUrl);
+                }
+            )
+            .AddHttpMessageHandler<CookieHandler>();
 
         // ApiClient
         services.AddScoped<ApiClient>(sp =>
@@ -126,7 +125,10 @@ public static class DependencyInjection
         services.AddScoped<ApiClientServiceProxy>();
     }
 
-    public static void AddAuthenticationAndLocalization(this IServiceCollection services, IConfiguration configuration)
+    public static void AddAuthenticationAndLocalization(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
     {
         // Authentication and Authorization
         services.AddAuthorizationCore();
@@ -136,13 +138,18 @@ public static class DependencyInjection
             configuration.Bind("Local", options.ProviderOptions);
         });
         services.AddScoped<AuthenticationStateProvider, CookieAuthenticationStateProvider>();
-        services.AddScoped(sp => (ISignInManagement)sp.GetRequiredService<AuthenticationStateProvider>());
+        services.AddScoped(sp =>
+            (ISignInManagement)sp.GetRequiredService<AuthenticationStateProvider>()
+        );
 
         // Localization
         services.AddLocalization(options => options.ResourcesPath = "Resources");
     }
 
-    public static async Task InitializeCultureAsync(this WebAssemblyHost app, string storageKey = "_Culture")
+    public static async Task InitializeCultureAsync(
+        this WebAssemblyHost app,
+        string storageKey = "_Culture"
+    )
     {
         var storageService = app.Services.GetRequiredService<IStorageService>();
         var languageCode = await storageService.GetItemAsync<string>(storageKey);
@@ -151,4 +158,3 @@ public static class DependencyInjection
         CultureInfo.DefaultThreadCurrentUICulture = culture;
     }
 }
-

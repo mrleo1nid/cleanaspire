@@ -13,7 +13,6 @@ using CleanAspire.Api.Client.ResendConfirmationEmail;
 using CleanAspire.Api.Client.ResetPassword;
 using CleanAspire.Api.Client.Stocks;
 using CleanAspire.Api.Client.Tenants;
-using CleanAspire.Api.Client.Webpushr;
 using Microsoft.Kiota.Abstractions.Extensions;
 using Microsoft.Kiota.Abstractions;
 using System.Collections.Generic;
@@ -92,11 +91,6 @@ namespace CleanAspire.Api.Client
         public global::CleanAspire.Api.Client.Tenants.TenantsRequestBuilder Tenants
         {
             get => new global::CleanAspire.Api.Client.Tenants.TenantsRequestBuilder(PathParameters, RequestAdapter);
-        }
-        /// <summary>The webpushr property</summary>
-        public global::CleanAspire.Api.Client.Webpushr.WebpushrRequestBuilder Webpushr
-        {
-            get => new global::CleanAspire.Api.Client.Webpushr.WebpushrRequestBuilder(PathParameters, RequestAdapter);
         }
         /// <summary>
         /// Instantiates a new <see cref="global::CleanAspire.Api.Client.ApiClient"/> and sets the default values.
