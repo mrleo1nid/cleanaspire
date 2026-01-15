@@ -99,37 +99,37 @@ Stock
 **Описание:** Полное удаление функционала регистрации новых пользователей. В self-hosted системе пользователи создаются администратором.
 
 #### Backend компоненты
-- [ ] `src/CleanAspire.Api/IdentityApiAdditionalEndpointsExtensions.cs`
+- [x] `src/CleanAspire.Api/IdentityApiAdditionalEndpointsExtensions.cs`
   - Удалить endpoint `POST /account/signup`
-  - Удалить endpoint `GET /account/confirmEmail`
+  - Удалить endpoint `GET /account/confirmEmail` (изменен для работы только с email change)
   - Удалить класс `SignupRequest`
-  - Удалить всю логику email подтверждения
+  - Удалить всю логику email подтверждения для регистрации
 
 - [ ] `src/CleanAspire.Api/Identity/EmailSender.cs`
   - Удалить сервис отправки email подтверждений
   - Удалить SendGrid интеграцию для регистрации
 
 #### Frontend компоненты (Razor Pages)
-- [ ] `src/CleanAspire.ClientApp/Pages/Account/SignUp.razor`
+- [x] `src/CleanAspire.ClientApp/Pages/Account/SignUp.razor`
   - Удалить страницу регистрации
 
-- [ ] `src/CleanAspire.ClientApp/Pages/Account/SignupConfirmation.razor`
+- [x] `src/CleanAspire.ClientApp/Pages/Account/SignupConfirmation.razor`
   - Удалить страницу подтверждения регистрации
 
-- [ ] `src/CleanAspire.ClientApp/Pages/Account/SignupSuccessful.razor`
+- [x] `src/CleanAspire.ClientApp/Pages/Account/SignupSuccessful.razor`
   - Удалить страницу успешной регистрации
 
-- [ ] `src/CleanAspire.ClientApp/Pages/Account/SignIn.razor`
+- [x] `src/CleanAspire.ClientApp/Pages/Account/SignIn.razor`
   - Удалить ссылку "Create an account" / "Sign Up"
 
 #### Generated API Client
-- [ ] `src/CleanAspire.ClientApp/Client/Account/Signup/SignupRequestBuilder.cs`
+- [x] `src/CleanAspire.ClientApp/Client/Account/Signup/SignupRequestBuilder.cs`
   - Удалить generated код для signup
 
-- [ ] `src/CleanAspire.ClientApp/Client/Register/RegisterRequestBuilder.cs`
+- [x] `src/CleanAspire.ClientApp/Client/Register/RegisterRequestBuilder.cs`
   - Удалить generated код для registration
 
-- [ ] `src/CleanAspire.ClientApp/Client/Models/SignupRequest.cs`
+- [x] `src/CleanAspire.ClientApp/Client/Models/SignupRequest.cs`
   - Удалить модель SignupRequest
 
 ---
@@ -139,7 +139,7 @@ Stock
 **Описание:** Удаление всех сторонних методов аутентификации. Оставить только вход по логину и паролю.
 
 #### Backend OAuth endpoints
-- [ ] `src/CleanAspire.Api/IdentityApiAdditionalEndpointsExtensions.cs`
+- [x] `src/CleanAspire.Api/IdentityApiAdditionalEndpointsExtensions.cs`
   - Удалить `GET /account/google/loginUrl`
   - Удалить `POST /account/google/signIn`
   - Удалить `GET /account/microsoft/loginUrl`
@@ -148,34 +148,34 @@ Stock
   - Удалить всю логику Microsoft OAuth
 
 #### Frontend OAuth компоненты
-- [ ] `src/CleanAspire.ClientApp/Pages/Account/GoogleLoginCallback.razor`
+- [x] `src/CleanAspire.ClientApp/Pages/Account/GoogleLoginCallback.razor`
   - Удалить страницу Google callback (`/external-login`)
 
-- [ ] `src/CleanAspire.ClientApp/Pages/Account/MicrosoftLoginCallback.razor`
+- [x] `src/CleanAspire.ClientApp/Pages/Account/MicrosoftLoginCallback.razor`
   - Удалить страницу Microsoft callback (`/authentication-callback`)
 
-- [ ] `src/CleanAspire.ClientApp/Pages/Account/SignIn.razor`
+- [x] `src/CleanAspire.ClientApp/Pages/Account/SignIn.razor`
   - Удалить кнопку "Login with Google"
   - Удалить кнопку "Login with Microsoft"
   - Удалить иконки `Icons.Custom.Brands.Google` и `Icons.Custom.Brands.Microsoft`
 
 #### Generated API Client для OAuth
-- [ ] `src/CleanAspire.ClientApp/Client/Account/Google/GoogleRequestBuilder.cs`
+- [x] `src/CleanAspire.ClientApp/Client/Account/Google/GoogleRequestBuilder.cs`
   - Удалить Google API client
 
-- [ ] `src/CleanAspire.ClientApp/Client/Account/Google/LoginUrl/LoginUrlRequestBuilder.cs`
+- [x] `src/CleanAspire.ClientApp/Client/Account/Google/LoginUrl/LoginUrlRequestBuilder.cs`
   - Удалить Google LoginUrl builder
 
-- [ ] `src/CleanAspire.ClientApp/Client/Account/Google/SignIn/SignInRequestBuilder.cs`
+- [x] `src/CleanAspire.ClientApp/Client/Account/Google/SignIn/SignInRequestBuilder.cs`
   - Удалить Google SignIn builder
 
-- [ ] `src/CleanAspire.ClientApp/Client/Account/Microsoft/MicrosoftRequestBuilder.cs`
+- [x] `src/CleanAspire.ClientApp/Client/Account/Microsoft/MicrosoftRequestBuilder.cs`
   - Удалить Microsoft API client
 
-- [ ] `src/CleanAspire.ClientApp/Client/Account/Microsoft/LoginUrl/LoginUrlRequestBuilder.cs`
+- [x] `src/CleanAspire.ClientApp/Client/Account/Microsoft/LoginUrl/LoginUrlRequestBuilder.cs`
   - Удалить Microsoft LoginUrl builder
 
-- [ ] `src/CleanAspire.ClientApp/Client/Account/Microsoft/SignIn/SignInRequestBuilder.cs`
+- [x] `src/CleanAspire.ClientApp/Client/Account/Microsoft/SignIn/SignInRequestBuilder.cs`
   - Удалить Microsoft SignIn builder
 
 #### Конфигурация OAuth
@@ -809,9 +809,9 @@ Stock
 ### Этап 1: Документирование (КРИТИЧЕСКИ ВАЖНО)
 
 **Задачи документирования перед удалением:**
-- [ ] Документировать OAuth (Google & Microsoft) в IMPLEMENTATION_REFERENCE.md
-- [ ] Документировать Sign Up flow в IMPLEMENTATION_REFERENCE.md
-- [ ] Документировать 2FA в IMPLEMENTATION_REFERENCE.md
+- [x] Документировать OAuth (Google & Microsoft) в IMPLEMENTATION_REFERENCE.md
+- [x] Документировать Sign Up flow в IMPLEMENTATION_REFERENCE.md
+- [x] Документировать 2FA в IMPLEMENTATION_REFERENCE.md
 - [ ] Документировать Stock entity и бизнес-логику
 - [ ] Документировать Product entity и импорт/экспорт
 - [ ] Документировать Tenant entity и мультитенанси
@@ -824,18 +824,18 @@ Stock
 ### Этап 2: Удаление регистрации и OAuth (раздел 1)
 
 **2.1 Регистрация пользователей**
-- [ ] Удалить Backend endpoints (SignUp, ConfirmEmail)
-- [ ] Удалить Frontend pages (SignUp.razor, SignupConfirmation.razor, SignupSuccessful.razor)
-- [ ] Удалить Generated API clients
+- [x] Удалить Backend endpoints (SignUp, ConfirmEmail изменен)
+- [x] Удалить Frontend pages (SignUp.razor, SignupConfirmation.razor, SignupSuccessful.razor)
+- [x] Удалить Generated API clients
 - [ ] Удалить EmailSender для регистрации
 
-**Commit:** `git commit -m "feat: remove user registration functionality"`
+**Commit:** `git commit -m "feat: remove user registration functionality"` ✅
 
 **2.2 OAuth (Google & Microsoft)**
-- [ ] Удалить Backend OAuth endpoints
-- [ ] Удалить Frontend callback pages
-- [ ] Удалить OAuth buttons из SignIn.razor
-- [ ] Удалить Generated API clients для OAuth
+- [x] Удалить Backend OAuth endpoints
+- [x] Удалить Frontend callback pages
+- [x] Удалить OAuth buttons из SignIn.razor
+- [x] Удалить Generated API clients для OAuth
 - [ ] Удалить конфигурацию OAuth из appsettings
 
 **Commit:** `git commit -m "feat: remove OAuth authentication (Google & Microsoft)"`
