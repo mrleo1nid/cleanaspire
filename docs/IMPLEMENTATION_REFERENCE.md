@@ -626,6 +626,102 @@ public class StockConfiguration : IEntityTypeConfiguration<Stock>
 }
 ```
 
+#### Application Layer - Validators
+
+**Файл:** `src/CleanAspire.Application/Features/Stocks/Validators/StockDispatchingCommandValidator.cs`
+
+```csharp
+public class StockDispatchingCommandValidator : AbstractValidator<StockDispatchingCommand>
+{
+    public StockDispatchingCommandValidator()
+    {
+        RuleFor(x => x.ProductId).NotEmpty().WithMessage("ProductId is required.");
+        RuleFor(x => x.Quantity).GreaterThan(0).WithMessage("Quantity must be greater than 0.");
+        RuleFor(x => x.Location).NotEmpty().WithMessage("Location is required.");
+    }
+}
+```
+
+**Файл:** `src/CleanAspire.Application/Features/Stocks/Validators/StockReceivingCommandValidator.cs`
+
+```csharp
+public class StockReceivingCommandValidator : AbstractValidator<StockReceivingCommand>
+{
+    public StockReceivingCommandValidator()
+    {
+        RuleFor(x => x.ProductId).NotEmpty().WithMessage("ProductId is required.");
+        RuleFor(x => x.Quantity).GreaterThan(0).WithMessage("Quantity must be greater than 0.");
+        RuleFor(x => x.Location).NotEmpty().WithMessage("Location is required.");
+    }
+}
+```
+
+#### Application Layer - Query
+
+**Файл:** `src/CleanAspire.Application/Features/Stocks/Queryies/StocksWithPaginationQuery.cs`
+
+```csharp
+public record StocksWithPaginationQuery(
+    string Keywords,
+    int PageNumber = 0,
+    int PageSize = 15,
+    string OrderBy = "Id",
+    string SortDirection = "Descending"
+) : IFusionCacheRequest<PaginatedResult<StockDto>>
+{
+    public IEnumerable<string>? Tags => new[] { "stocks" };
+    public string CacheKey =>
+        $"stockswithpagination_{Keywords}_{PageNumber}_{PageSize}_{OrderBy}_{SortDirection}";
+}
+
+public class StocksWithPaginationQueryHandler
+    : IRequestHandler<StocksWithPaginationQuery, PaginatedResult<StockDto>>
+{
+    private readonly IApplicationDbContext _context;
+
+    public async ValueTask<PaginatedResult<StockDto>> Handle(
+        StocksWithPaginationQuery request,
+        CancellationToken cancellationToken
+    )
+    {
+        var data = await _context
+            .Stocks.Include(x => x.Product)
+            .OrderBy(request.OrderBy, request.SortDirection)
+            .ProjectToPaginatedDataAsync(
+                condition: x =>
+                    x.Location.Contains(request.Keywords)
+                    || (x.Product != null && (
+                        x.Product.Name.Contains(request.Keywords)
+                        || x.Product.SKU.Contains(request.Keywords)
+                        || (x.Product.Description != null && x.Product.Description.Contains(request.Keywords))
+                    )),
+                pageNumber: request.PageNumber,
+                pageSize: request.PageSize,
+                mapperFunc: t => new StockDto
+                {
+                    Id = t.Id,
+                    ProductId = t.ProductId ?? string.Empty,
+                    Product = t.Product != null ? new ProductDto { ... } : new ProductDto { ... },
+                    Quantity = t.Quantity,
+                    Location = t.Location,
+                },
+                cancellationToken: cancellationToken
+            );
+        return data;
+    }
+}
+```
+
+#### Frontend - UI Components
+
+**Файл:** `src/CleanAspire.ClientApp/Pages/Stocks/Index.razor`
+
+Основная страница управления запасами с MudDataGrid, кнопками Receiving и Dispatch.
+
+**Файл:** `src/CleanAspire.ClientApp/Pages/Stocks/StockDialog.razor`
+
+Диалог для операций со складом (Receiving/Dispatch) с ProductAutocomplete, полями Location и Quantity.
+
 ---
 
 ### 1.3 Tenant (Мультитенанси)
