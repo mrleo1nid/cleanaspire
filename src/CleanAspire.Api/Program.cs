@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -16,6 +16,7 @@ using CleanAspire.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 
@@ -131,13 +132,31 @@ builder.AddServiceDefaults();
 builder.Services.AddProblemDetails();
 
 var app = builder.Build();
+
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+logger.LogInformation("═══════════════════════════════════════════════════════════");
+logger.LogInformation("🚀 CleanAspire API - Starting application initialization...");
+logger.LogInformation("═══════════════════════════════════════════════════════════");
+
+logger.LogInformation("📊 Initializing database...");
 await app.InitializeDatabaseAsync();
+logger.LogInformation("✅ Database initialization completed successfully.");
 
 // Configure the HTTP request pipeline.
+logger.LogInformation("🔧 Configuring HTTP request pipeline...");
 app.UseExceptionHandler();
+logger.LogInformation("   ✅ Exception handler configured");
+
+logger.LogInformation("   📍 Registering API endpoints...");
 app.MapEndpointDefinitions();
+logger.LogInformation("   ✅ API endpoints registered");
+
 app.UseCors("wasm");
+logger.LogInformation("   ✅ CORS policy configured");
+
 app.UseAntiforgery();
+logger.LogInformation("   ✅ Antiforgery protection enabled");
+
 app.Use(
     async (context, next) =>
     {
@@ -154,17 +173,30 @@ app.Use(
         }
     }
 );
+logger.LogInformation("   ✅ User context middleware configured");
 
+logger.LogInformation("   📍 Registering default endpoints...");
 app.MapDefaultEndpoints();
+logger.LogInformation("   ✅ Default endpoints registered");
+
+logger.LogInformation("   📍 Registering Identity API endpoints...");
 app.MapIdentityApi<ApplicationUser>();
 app.MapIdentityApiAdditionalEndpoints<ApplicationUser>();
+logger.LogInformation("   ✅ Identity API endpoints registered");
+
 if (app.Environment.IsDevelopment())
 {
+    logger.LogInformation("   📍 Registering development endpoints...");
     app.MapOpenApi();
     app.MapScalarApiReference();
+    logger.LogInformation("   ✅ Development endpoints registered (OpenAPI, Scalar)");
 }
+logger.LogInformation("   📁 Configuring static file serving...");
 if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), @"files")))
+{
     Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), @"files"));
+    logger.LogInformation("   📂 Created files directory");
+}
 app.UseStaticFiles(
     new StaticFileOptions
     {
@@ -174,4 +206,18 @@ app.UseStaticFiles(
         RequestPath = new PathString("/files"),
     }
 );
+logger.LogInformation("   ✅ Static file serving configured");
+
+// Log application readiness
+var environment = app.Environment.EnvironmentName;
+logger.LogInformation("═══════════════════════════════════════════════════════════");
+logger.LogInformation("✅ CleanAspire API - Application is ready and listening!");
+logger.LogInformation("   Environment: {Environment}", environment);
+if (app.Environment.IsDevelopment())
+{
+    logger.LogInformation("   OpenAPI: /openapi/v1.json");
+    logger.LogInformation("   API Reference: /api");
+}
+logger.LogInformation("═══════════════════════════════════════════════════════════");
+
 await app.RunAsync();

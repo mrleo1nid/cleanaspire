@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -45,7 +45,7 @@ public class ExportProductsQueryHandler : IRequestHandler<ExportProductsQuery, S
             .Products.Where(x =>
                 x.SKU.Contains(request.Keywords)
                 || x.Name.Contains(request.Keywords)
-                || x.Description.Contains(request.Keywords)
+                || (x.Description != null && x.Description.Contains(request.Keywords))
             )
             .Select(t => new ProductDto
             {

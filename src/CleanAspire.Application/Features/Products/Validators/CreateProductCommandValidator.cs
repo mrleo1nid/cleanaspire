@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -61,8 +61,13 @@ public class CreateProductCommandValidator : AbstractValidator<CreateProductComm
     /// </summary>
     /// <param name="currency">The currency code to validate.</param>
     /// <returns>True if the currency is valid; otherwise, false.</returns>
-    private bool BeAValidCurrency(string currency)
+    private bool BeAValidCurrency(string? currency)
     {
+        if (string.IsNullOrWhiteSpace(currency))
+        {
+            return false;
+        }
+
         // Example list of valid currency codes
         var validCurrencies = new[] { "USD", "EUR", "GBP", "CNY" };
         return validCurrencies.Contains(currency);

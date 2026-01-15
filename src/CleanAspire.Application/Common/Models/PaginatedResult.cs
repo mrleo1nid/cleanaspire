@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -21,5 +21,5 @@ public class PaginatedResult<T>
     public int TotalPages { get; }
     public bool HasPreviousPage => CurrentPage > 1;
     public bool HasNextPage => CurrentPage < TotalPages;
-    public IEnumerable<T> Items { get; set; }
+    public IEnumerable<T> Items { get; set; } = Array.Empty<T>();
 }

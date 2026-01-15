@@ -1,6 +1,11 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
+
+using CleanAspire.Domain;
+using CleanAspire.Domain.Entities;
+using Mediator;
+using Microsoft.Extensions.Logging;
 
 namespace CleanAspire.Application.Features.Products.EventHandlers;
 
@@ -26,21 +31,36 @@ public class ProductUpdatedEvent : DomainEvent
     /// </summary>
     public Product Item { get; }
 }
-/*
+
+/// <summary>
+/// Handler for ProductUpdatedEvent domain events.
+/// Logs when a product is updated.
+/// </summary>
 public class ProductUpdatedEventHandler : INotificationHandler<ProductUpdatedEvent>
 {
     private readonly ILogger<ProductUpdatedEventHandler> _logger;
 
-    public ProductUpdatedEventHandler(
-        ILogger<ProductUpdatedEventHandler> logger
-    )
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ProductUpdatedEventHandler"/> class.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    public ProductUpdatedEventHandler(ILogger<ProductUpdatedEventHandler> logger)
     {
         _logger = logger;
     }
 
-    public async Task Handle(ProductUpdatedEvent notification, CancellationToken cancellationToken)
+    /// <summary>
+    /// Handles the ProductUpdatedEvent notification.
+    /// </summary>
+    /// <param name="notification">The product updated event notification.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    public ValueTask Handle(ProductUpdatedEvent notification, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Handled domain event '{EventType}' with notification: {@Notification} in {ElapsedMilliseconds} ms", notification.GetType().Name, notification, _timer.ElapsedMilliseconds);
+        _logger.LogInformation(
+            "Handled domain event '{EventType}' with notification: {@Notification}",
+            notification.GetType().Name,
+            notification
+        );
+        return ValueTask.CompletedTask;
     }
 }
-*/

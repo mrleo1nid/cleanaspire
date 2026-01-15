@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -19,12 +19,12 @@ public class StockDto
     /// <summary>
     /// Gets or sets the unique identifier for the product.
     /// </summary>
-    public string ProductId { get; set; }
+    public string ProductId { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the product details.
     /// </summary>
-    public ProductDto Product { get; set; }
+    public ProductDto? Product { get; set; }
 
     /// <summary>
     /// Gets or sets the quantity of the stock.
