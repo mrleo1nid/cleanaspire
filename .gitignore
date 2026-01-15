@@ -370,3 +370,6 @@ src/CleanAspire.Api/CleanAspire.Api.json
 src/CleanAspire.Api/pushsubscription.sqlitedb
 
 .env
+
+# Temporary Claude files
+tmpclaude-*-cwd
