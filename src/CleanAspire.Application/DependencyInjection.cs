@@ -16,13 +16,11 @@ public static class DependencyInjection
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(FusionCacheBehaviour<,>));
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(FusionCacheRefreshBehaviour<,>));
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(MessageValidatorBehaviour<,>));
-        services.AddMediator(options=>
+        services.AddMediator(options =>
         {
             options.ServiceLifetime = ServiceLifetime.Scoped;
         });
 
-       
         return services;
     }
 }
-

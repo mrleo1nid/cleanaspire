@@ -1,5 +1,8 @@
-﻿namespace CleanAspire.ClientApp.Services.Interfaces;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
+namespace CleanAspire.ClientApp.Services.Interfaces;
 
 public interface IStorageService
 {
@@ -27,4 +30,3 @@ public interface IStorageService
     /// <returns>A <see cref="ValueTask"/> representing the asynchronous operation.</returns>
     ValueTask SetItemAsync<T>(string key, T value);
 }
-

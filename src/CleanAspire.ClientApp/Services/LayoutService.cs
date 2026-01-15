@@ -1,8 +1,11 @@
-﻿using CleanAspire.ClientApp.Services.UserPreferences;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using CleanAspire.ClientApp.Services.UserPreferences;
 using MudBlazor;
 
 namespace CleanAspire.ClientApp.Services;
-
 
 /// <summary>
 /// Represents a service that manages the layout and theme preferences of the application.
@@ -50,7 +53,9 @@ public class LayoutService
     /// <param name="userPreferencesService">The user preferences service.</param>
     public LayoutService(IUserPreferencesService userPreferencesService)
     {
-        _userPreferencesService = userPreferencesService ?? throw new ArgumentNullException(nameof(userPreferencesService));
+        _userPreferencesService =
+            userPreferencesService
+            ?? throw new ArgumentNullException(nameof(userPreferencesService));
         CurrentTheme = Theme.ApplicationTheme();
     }
 
@@ -83,7 +88,7 @@ public class LayoutService
                 DarkLightMode.Dark => true,
                 DarkLightMode.Light => false,
                 DarkLightMode.System => isDarkModeDefaultTheme,
-                _ => IsDarkMode
+                _ => IsDarkMode,
             };
 
             IsRTL = _userPreferences.RightToLeft;
@@ -91,7 +96,10 @@ public class LayoutService
         else
         {
             IsDarkMode = isDarkModeDefaultTheme;
-            _userPreferences = new UserPreferences.UserPreferences { DarkLightTheme = DarkLightMode.System };
+            _userPreferences = new UserPreferences.UserPreferences
+            {
+                DarkLightTheme = DarkLightMode.System,
+            };
             await _userPreferencesService.SaveUserPreferences(_userPreferences);
         }
     }
@@ -173,4 +181,3 @@ public class LayoutService
         OnMajorUpdateOccurred();
     }
 }
-

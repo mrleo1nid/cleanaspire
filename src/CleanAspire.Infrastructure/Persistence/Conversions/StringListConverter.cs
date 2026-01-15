@@ -1,5 +1,6 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -8,15 +9,20 @@ namespace CleanAspire.Infrastructure.Persistence.Conversions;
 
 public class StringListConverter : ValueConverter<List<string>, string>
 {
-    private readonly static JsonSerializerOptions DefaultJsonSerializerOptions = new JsonSerializerOptions
-    {
-        PropertyNameCaseInsensitive = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-    };
-    public StringListConverter() : base(v => JsonSerializer.Serialize(v, DefaultJsonSerializerOptions),
-        v => JsonSerializer.Deserialize<List<string>>(string.IsNullOrEmpty(v) ? "[]" : v,
-            DefaultJsonSerializerOptions) ?? new List<string>()
-    )
-    {
-    }
+    private static readonly JsonSerializerOptions DefaultJsonSerializerOptions =
+        new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        };
+
+    public StringListConverter()
+        : base(
+            v => JsonSerializer.Serialize(v, DefaultJsonSerializerOptions),
+            v =>
+                JsonSerializer.Deserialize<List<string>>(
+                    string.IsNullOrEmpty(v) ? "[]" : v,
+                    DefaultJsonSerializerOptions
+                ) ?? new List<string>()
+        ) { }
 }

@@ -1,4 +1,8 @@
-﻿namespace CleanAspire.ClientApp.Services.UserPreferences;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+namespace CleanAspire.ClientApp.Services.UserPreferences;
 
 public class UserPreferences
 {
@@ -17,5 +21,5 @@ public enum DarkLightMode
 {
     System = 0,
     Light = 1,
-    Dark = 2
+    Dark = 2,
 }

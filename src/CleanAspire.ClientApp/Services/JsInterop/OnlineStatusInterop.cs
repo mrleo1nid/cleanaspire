@@ -2,12 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-
 namespace CleanAspire.ClientApp.Services.JsInterop;
 
-using Microsoft.JSInterop;
 using System;
 using System.Threading.Tasks;
+using Microsoft.JSInterop;
 
 public class OnlineStatusInterop(IJSRuntime jsRuntime) : IAsyncDisposable
 {
@@ -38,4 +37,3 @@ public class OnlineStatusInterop(IJSRuntime jsRuntime) : IAsyncDisposable
         return ValueTask.CompletedTask;
     }
 }
-

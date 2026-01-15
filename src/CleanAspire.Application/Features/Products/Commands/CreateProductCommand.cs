@@ -1,9 +1,6 @@
-﻿// Summary:
-// This file defines a command and its handler for creating a new product in the database. 
-// The CreateProductCommand encapsulates the necessary data for a product, while the 
-// CreateProductCommandHandler processes the command, creates a product entity, 
-// triggers domain events such as ProductCreatedEvent, and commits the changes. This ensures 
-// a structured and efficient approach to handling product creation.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 using CleanAspire.Application.Features.Products.DTOs;
 using CleanAspire.Application.Features.Products.EventHandlers;
@@ -11,7 +8,7 @@ using CleanAspire.Application.Pipeline;
 
 namespace CleanAspire.Application.Features.Products.Commands;
 
-// Command object that encapsulates the data required for creating a new product. 
+// Command object that encapsulates the data required for creating a new product.
 // Its fields directly map to the properties of ProductDto.
 public record CreateProductCommand(
     string SKU,
@@ -21,8 +18,7 @@ public record CreateProductCommand(
     decimal Price,
     string? Currency,
     string? UOM
-) : IFusionCacheRefreshRequest<ProductDto>,
-    IRequiresValidation
+) : IFusionCacheRefreshRequest<ProductDto>, IRequiresValidation
 {
     public IEnumerable<string>? Tags => new[] { "products" };
 }
@@ -36,7 +32,10 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
         _context = context;
     }
 
-    public async ValueTask<ProductDto> Handle(CreateProductCommand request, CancellationToken cancellationToken)
+    public async ValueTask<ProductDto> Handle(
+        CreateProductCommand request,
+        CancellationToken cancellationToken
+    )
     {
         var product = new Product
         {
@@ -46,13 +45,18 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
             Description = request.Description,
             Price = request.Price,
             Currency = request.Currency,
-            UOM = request.UOM
+            UOM = request.UOM,
         };
 
         product.AddDomainEvent(new ProductCreatedEvent(product));
         _context.Products.Add(product);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return new ProductDto() { Id = product.Id, Name = product.Name, SKU = product.SKU };
+        return new ProductDto()
+        {
+            Id = product.Id,
+            Name = product.Name,
+            SKU = product.SKU,
+        };
     }
 }

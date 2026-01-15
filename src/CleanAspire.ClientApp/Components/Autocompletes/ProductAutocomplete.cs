@@ -1,4 +1,6 @@
-﻿
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 using CleanAspire.Api.Client;
 using CleanAspire.Api.Client.Models;
@@ -18,40 +20,62 @@ public class ProductAutocomplete<T> : MudAutocomplete<ProductDto>
         ResetValueOnEmptyText = true;
         ShowProgressIndicator = true;
     }
-    [Parameter] public string? DefaultProductId { get; set; }
+
+    [Parameter]
+    public string? DefaultProductId { get; set; }
     public List<ProductDto>? Products { get; set; } = new();
-    [Inject] private ApiClient ApiClient { get; set; } = default!;
-    [Inject] private ApiClientServiceProxy ApiClientServiceProxy { get; set; } = default!;
+
+    [Inject]
+    private ApiClient ApiClient { get; set; } = default!;
+
+    [Inject]
+    private ApiClientServiceProxy ApiClientServiceProxy { get; set; } = default!;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            Products = await ApiClientServiceProxy.QueryAsync("_allproducts", () => ApiClient.Products.GetAsync(), tags: null, expiration: TimeSpan.FromMinutes(60));
+            Products = await ApiClientServiceProxy.QueryAsync(
+                "_allproducts",
+                () => ApiClient.Products.GetAsync(),
+                tags: null,
+                expiration: TimeSpan.FromMinutes(60)
+            );
             if (!string.IsNullOrEmpty(DefaultProductId))
             {
                 var defaultProduct = Products?.FirstOrDefault(p => p.Id == DefaultProductId);
                 if (defaultProduct != null)
                 {
-                    Value = defaultProduct; 
+                    Value = defaultProduct;
                     await ValueChanged.InvokeAsync(Value);
                 }
             }
             StateHasChanged(); // Trigger a re-render after the tenants are loaded
         }
     }
-    private async Task<IEnumerable<ProductDto>> SearchKeyValues(string? value, CancellationToken cancellation)
+
+    private async Task<IEnumerable<ProductDto>> SearchKeyValues(
+        string? value,
+        CancellationToken cancellation
+    )
     {
         IEnumerable<ProductDto> result;
 
         if (string.IsNullOrWhiteSpace(value))
             result = Products ?? new List<ProductDto>();
         else
-            result = Products?
-                .Where(x => x.Name?.Contains(value, StringComparison.InvariantCultureIgnoreCase) == true ||
-                            x.Sku?.Contains(value, StringComparison.InvariantCultureIgnoreCase) == true ||
-                            x.Description?.Contains(value, StringComparison.InvariantCultureIgnoreCase) == true)
-                .ToList() ?? new List<ProductDto>();
+            result =
+                Products
+                    ?.Where(x =>
+                        x.Name?.Contains(value, StringComparison.InvariantCultureIgnoreCase) == true
+                        || x.Sku?.Contains(value, StringComparison.InvariantCultureIgnoreCase)
+                            == true
+                        || x.Description?.Contains(
+                            value,
+                            StringComparison.InvariantCultureIgnoreCase
+                        ) == true
+                    )
+                    .ToList() ?? new List<ProductDto>();
 
         return await Task.FromResult(result);
     }

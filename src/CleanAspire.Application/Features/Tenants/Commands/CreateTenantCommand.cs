@@ -4,30 +4,33 @@
 
 namespace CleanAspire.Application.Features.Tenants.Commands;
 
-public record CreateTenantCommand(string Name, string Description) : IFusionCacheRefreshRequest<string>
+public record CreateTenantCommand(string Name, string Description)
+    : IFusionCacheRefreshRequest<string>
 {
     public IEnumerable<string>? Tags => new[] { "tenants" };
 }
 
-public class CreateTenantCommandHandler : IRequestHandler<CreateTenantCommand,string>
+public class CreateTenantCommandHandler : IRequestHandler<CreateTenantCommand, string>
 {
     private readonly ILogger<CreateTenantCommandHandler> _logger;
     private readonly IApplicationDbContext _dbContext;
 
-    public CreateTenantCommandHandler(ILogger<CreateTenantCommandHandler> logger, IApplicationDbContext dbContext)
+    public CreateTenantCommandHandler(
+        ILogger<CreateTenantCommandHandler> logger,
+        IApplicationDbContext dbContext
+    )
     {
         _logger = logger;
         _dbContext = dbContext;
     }
 
-    public async ValueTask<string> Handle(CreateTenantCommand request, CancellationToken cancellationToken)
+    public async ValueTask<string> Handle(
+        CreateTenantCommand request,
+        CancellationToken cancellationToken
+    )
     {
         // Creating a new tenant instance with a unique Id
-        var tenant = new Tenant
-        {
-            Name = request.Name,
-            Description = request.Description
-        };
+        var tenant = new Tenant { Name = request.Name, Description = request.Description };
         // Logic to add tenant to the database
         _dbContext.Tenants.Add(tenant);
         await _dbContext.SaveChangesAsync(cancellationToken);

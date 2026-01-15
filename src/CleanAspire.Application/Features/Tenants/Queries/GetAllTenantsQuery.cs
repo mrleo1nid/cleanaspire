@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using CleanAspire.Application.Features.Tenants.DTOs;
+
 namespace CleanAspire.Application.Features.Tenants.Queries;
 
 public record GetAllTenantsQuery() : IFusionCacheRequest<List<TenantDto>>
@@ -20,14 +21,18 @@ public class GetAllTenantsQueryHandler : IRequestHandler<GetAllTenantsQuery, Lis
         _dbContext = dbContext;
     }
 
-    public async ValueTask<List<TenantDto>> Handle(GetAllTenantsQuery request, CancellationToken cancellationToken)
+    public async ValueTask<List<TenantDto>> Handle(
+        GetAllTenantsQuery request,
+        CancellationToken cancellationToken
+    )
     {
-        var tenants = await _dbContext.Tenants.OrderBy(x=>x.Name)
+        var tenants = await _dbContext
+            .Tenants.OrderBy(x => x.Name)
             .Select(t => new TenantDto
             {
                 Id = t.Id,
                 Name = t.Name,
-                Description = t.Description
+                Description = t.Description,
             })
             .ToListAsync(cancellationToken);
 

@@ -1,13 +1,13 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
-using System.Text.Json;
 using CleanAspire.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CleanAspire.Infrastructure.Persistence.Configurations;
+
 /// <summary>
 /// Configures the Stock entity.
 /// </summary>
@@ -27,7 +27,11 @@ public class StockConfiguration : IEntityTypeConfiguration<Stock>
         /// <summary>
         /// Configures the relationship between the Stock and Product entities.
         /// </summary>
-        builder.HasOne(x => x.Product).WithMany().HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Cascade);
+        builder
+            .HasOne(x => x.Product)
+            .WithMany()
+            .HasForeignKey(x => x.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         /// <summary>
         /// Configures the Location property of the Stock entity.

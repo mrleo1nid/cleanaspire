@@ -1,4 +1,8 @@
-﻿var builder = DistributedApplication.CreateBuilder(args);
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+var builder = DistributedApplication.CreateBuilder(args);
 
 // PostgreSQL database for the application
 var postgresDatabase = builder
@@ -24,6 +28,7 @@ builder
     .AddProject<Projects.CleanAspire_WebApp>("blazorweb")
     .WithExternalHttpEndpoints()
     .WithReference(apiService)
+    .WithExplicitStart() // Requires manual start from Aspire Dashboard
     .WaitFor(apiService);
 
 // Blazor WebAssembly Standalone project.

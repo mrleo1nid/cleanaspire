@@ -1,4 +1,8 @@
-﻿namespace CleanAspire.Application.Pipeline;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+namespace CleanAspire.Application.Pipeline;
 
 /// <summary>
 /// Pipeline behavior for handling requests with FusionCache.
@@ -32,15 +36,24 @@ public class FusionCacheBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequ
     /// <param name="next">The next handler delegate.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The response instance.</returns>
-    public async ValueTask<TResponse> Handle(TRequest request, MessageHandlerDelegate<TRequest, TResponse> next,
-        CancellationToken cancellationToken)
+    public async ValueTask<TResponse> Handle(
+        TRequest request,
+        MessageHandlerDelegate<TRequest, TResponse> next,
+        CancellationToken cancellationToken
+    )
     {
-        _logger.LogInformation("Handling request of type {RequestType} with cache key {CacheKey}", nameof(request), request.CacheKey);
-        var response = await _fusionCache.GetOrSetAsync<TResponse>(
-            request.CacheKey,
-            async (ctx, token) => await next(request, token),
-            tags: request.Tags
-            ).ConfigureAwait(false);
+        _logger.LogInformation(
+            "Handling request of type {RequestType} with cache key {CacheKey}",
+            nameof(request),
+            request.CacheKey
+        );
+        var response = await _fusionCache
+            .GetOrSetAsync<TResponse>(
+                request.CacheKey,
+                async (ctx, token) => await next(request, token),
+                tags: request.Tags
+            )
+            .ConfigureAwait(false);
 
         return response;
     }

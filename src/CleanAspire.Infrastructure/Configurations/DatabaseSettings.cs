@@ -1,4 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using System.ComponentModel.DataAnnotations;
 
 namespace CleanAspire.Infrastructure.Configurations;
 
@@ -32,11 +36,13 @@ public class DatabaseSettings : IValidatableObject
         if (string.IsNullOrEmpty(DBProvider))
             yield return new ValidationResult(
                 $"{nameof(DatabaseSettings)}.{nameof(DBProvider)} is not configured",
-                new[] { nameof(DBProvider) });
+                new[] { nameof(DBProvider) }
+            );
 
         if (string.IsNullOrEmpty(ConnectionString))
             yield return new ValidationResult(
                 $"{nameof(DatabaseSettings)}.{nameof(ConnectionString)} is not configured",
-                new[] { nameof(ConnectionString) });
+                new[] { nameof(ConnectionString) }
+            );
     }
 }

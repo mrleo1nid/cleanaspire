@@ -2,11 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CleanAspire.Application.Common.Interfaces;
 
 namespace CleanAspire.Infrastructure.Services;
@@ -25,7 +20,8 @@ public class FileUploadService : IUploadService
     /// <returns>The path of the uploaded file.</returns>
     public async Task<string> UploadAsync(UploadRequest request)
     {
-        if (request.Data == null || !request.Data.Any()) return string.Empty;
+        if (request.Data == null || !request.Data.Any())
+            return string.Empty;
 
         var folder = request.UploadType.ToString().ToLower();
         var folderName = Path.Combine("files", folder);
@@ -56,6 +52,7 @@ public class FileUploadService : IUploadService
 
         return dbPath;
     }
+
     /// <summary>
     /// remove file
     /// </summary>
@@ -69,6 +66,7 @@ public class FileUploadService : IUploadService
         }
         return Task.CompletedTask;
     }
+
     /// <summary>
     /// Gets the next available filename based on the given path.
     /// </summary>
@@ -80,7 +78,9 @@ public class FileUploadService : IUploadService
             return path;
 
         if (Path.HasExtension(path))
-            return GetNextFilename(path.Insert(path.LastIndexOf(Path.GetExtension(path)), NumberPattern));
+            return GetNextFilename(
+                path.Insert(path.LastIndexOf(Path.GetExtension(path)), NumberPattern)
+            );
 
         return GetNextFilename(path + NumberPattern);
     }
@@ -97,7 +97,8 @@ public class FileUploadService : IUploadService
         if (!File.Exists(tmp))
             return tmp;
 
-        int min = 1, max = 2;
+        int min = 1,
+            max = 2;
 
         while (File.Exists(string.Format(pattern, max)))
         {

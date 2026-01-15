@@ -8,7 +8,7 @@ namespace CleanAspire.ClientApp.Services.Navigation;
 
 public class MenuItem
 {
-    public string Label { get; set; }=string.Empty;
+    public string Label { get; set; } = string.Empty;
     public string? Description { get; set; }
     public string? Href { get; set; }
     public string? StartIcon { get; set; }
@@ -19,10 +19,14 @@ public class MenuItem
     public bool IsParent => SubItems.Any();
 }
 
-
 public enum PageStatus
 {
-    [Description("Coming Soon")] ComingSoon,
-    [Description("New")] New,
-    [Description("Completed")] Completed
+    [Description("Coming Soon")]
+    ComingSoon,
+
+    [Description("New")]
+    New,
+
+    [Description("Completed")]
+    Completed,
 }

@@ -1,4 +1,8 @@
-﻿using MudBlazor;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using MudBlazor;
 
 namespace CleanAspire.ClientApp;
 
@@ -107,99 +111,103 @@ public class Theme
 
                 // **Contrast Text for Primary Color**
                 PrimaryContrastText = "#FFFFFF", // White, text on primary color
-
-
             },
             Shadows = new()
             {
                 Elevation = new string[]
-        {
-            "none",
-            "0 2px 4px -1px rgba(6, 24, 44, 0.2)",
-            "0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 1px 5px 0px rgba(0,0,0,0.12)",
-            "0 30px 60px rgba(0,0,0,0.12)",
-            "0 6px 12px -2px rgba(50,50,93,0.25),0 3px 7px -3px rgba(0,0,0,0.3)",
-            "0 50px 100px -20px rgba(50,50,93,0.25),0 30px 60px -30px rgba(0,0,0,0.3)",
-            "0px 3px 5px -1px rgba(0,0,0,0.2),0px 6px 10px 0px rgba(0,0,0,0.14),0px 1px 18px 0px rgba(0,0,0,0.12)",
-            "0px 4px 5px -2px rgba(0,0,0,0.2),0px 7px 10px 1px rgba(0,0,0,0.14),0px 2px 16px 1px rgba(0,0,0,0.12)",
-            "0px 5px 5px -3px rgba(0,0,0,0.2),0px 8px 10px 1px rgba(0,0,0,0.14),0px 3px 14px 2px rgba(0,0,0,0.12)",
-            "0px 5px 6px -3px rgba(0,0,0,0.2),0px 9px 12px 1px rgba(0,0,0,0.14),0px 3px 16px 2px rgba(0,0,0,0.12)",
-            "0px 6px 6px -3px rgba(0,0,0,0.2),0px 10px 14px 1px rgba(0,0,0,0.14),0px 4px 18px 3px rgba(0,0,0,0.12)",
-            "0px 6px 7px -4px rgba(0,0,0,0.2),0px 11px 15px 1px rgba(0,0,0,0.14),0px 4px 20px 3px rgba(0,0,0,0.12)",
-            "0px 7px 8px -4px rgba(0,0,0,0.2),0px 12px 17px 2px rgba(0,0,0,0.14),0px 5px 22px 4px rgba(0,0,0,0.12)",
-            "0px 7px 8px -4px rgba(0,0,0,0.2),0px 13px 19px 2px rgba(0,0,0,0.14),0px 5px 24px 4px rgba(0,0,0,0.12)",
-            "0px 7px 9px -4px rgba(0,0,0,0.2),0px 14px 21px 2px rgba(0,0,0,0.14),0px 5px 26px 4px rgba(0,0,0,0.12)",
-            "0px 8px 9px -5px rgba(0,0,0,0.2),0px 15px 22px 2px rgba(0,0,0,0.14),0px 6px 28px 5px rgba(0,0,0,0.12)",
-            "0px 8px 10px -5px rgba(0,0,0,0.2),0px 16px 24px 2px rgba(0,0,0,0.14),0px 6px 30px 5px rgba(0,0,0,0.12)",
-            "0px 8px 11px -5px rgba(0,0,0,0.2),0px 17px 26px 2px rgba(0,0,0,0.14),0px 6px 32px 5px rgba(0,0,0,0.12)",
-            "0px 9px 11px -5px rgba(0,0,0,0.2),0px 18px 28px 2px rgba(0,0,0,0.14),0px 7px 34px 6px rgba(0,0,0,0.12)",
-            "0px 9px 12px -6px rgba(0,0,0,0.2),0px 19px 29px 2px rgba(0,0,0,0.14),0px 7px 36px 6px rgba(0,0,0,0.12)",
-            "0px 10px 13px -6px rgba(0,0,0,0.2),0px 20px 31px 3px rgba(0,0,0,0.14),0px 8px 38px 7px rgba(0,0,0,0.12)",
-            "0px 10px 13px -6px rgba(0,0,0,0.2),0px 21px 33px 3px rgba(0,0,0,0.14),0px 8px 40px 7px rgba(0,0,0,0.12)",
-            "0px 10px 14px -6px rgba(0,0,0,0.2),0px 22px 35px 3px rgba(0,0,0,0.14),0px 8px 42px 7px rgba(0,0,0,0.12)",
-            "0 50px 100px -20px rgba(50, 50, 93, 0.25), 0 30px 60px -30px rgba(0, 0, 0, 0.30)",
-            "2.8px 2.8px 2.2px rgba(0, 0, 0, 0.02),6.7px 6.7px 5.3px rgba(0, 0, 0, 0.028),12.5px 12.5px 10px rgba(0, 0, 0, 0.035),22.3px 22.3px 17.9px rgba(0, 0, 0, 0.042),41.8px 41.8px 33.4px rgba(0, 0, 0, 0.05),100px 100px 80px rgba(0, 0, 0, 0.07)",
-            "0px 0px 20px 0px rgba(0, 0, 0, 0.05)"
-        }
+                {
+                    "none",
+                    "0 2px 4px -1px rgba(6, 24, 44, 0.2)",
+                    "0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 1px 5px 0px rgba(0,0,0,0.12)",
+                    "0 30px 60px rgba(0,0,0,0.12)",
+                    "0 6px 12px -2px rgba(50,50,93,0.25),0 3px 7px -3px rgba(0,0,0,0.3)",
+                    "0 50px 100px -20px rgba(50,50,93,0.25),0 30px 60px -30px rgba(0,0,0,0.3)",
+                    "0px 3px 5px -1px rgba(0,0,0,0.2),0px 6px 10px 0px rgba(0,0,0,0.14),0px 1px 18px 0px rgba(0,0,0,0.12)",
+                    "0px 4px 5px -2px rgba(0,0,0,0.2),0px 7px 10px 1px rgba(0,0,0,0.14),0px 2px 16px 1px rgba(0,0,0,0.12)",
+                    "0px 5px 5px -3px rgba(0,0,0,0.2),0px 8px 10px 1px rgba(0,0,0,0.14),0px 3px 14px 2px rgba(0,0,0,0.12)",
+                    "0px 5px 6px -3px rgba(0,0,0,0.2),0px 9px 12px 1px rgba(0,0,0,0.14),0px 3px 16px 2px rgba(0,0,0,0.12)",
+                    "0px 6px 6px -3px rgba(0,0,0,0.2),0px 10px 14px 1px rgba(0,0,0,0.14),0px 4px 18px 3px rgba(0,0,0,0.12)",
+                    "0px 6px 7px -4px rgba(0,0,0,0.2),0px 11px 15px 1px rgba(0,0,0,0.14),0px 4px 20px 3px rgba(0,0,0,0.12)",
+                    "0px 7px 8px -4px rgba(0,0,0,0.2),0px 12px 17px 2px rgba(0,0,0,0.14),0px 5px 22px 4px rgba(0,0,0,0.12)",
+                    "0px 7px 8px -4px rgba(0,0,0,0.2),0px 13px 19px 2px rgba(0,0,0,0.14),0px 5px 24px 4px rgba(0,0,0,0.12)",
+                    "0px 7px 9px -4px rgba(0,0,0,0.2),0px 14px 21px 2px rgba(0,0,0,0.14),0px 5px 26px 4px rgba(0,0,0,0.12)",
+                    "0px 8px 9px -5px rgba(0,0,0,0.2),0px 15px 22px 2px rgba(0,0,0,0.14),0px 6px 28px 5px rgba(0,0,0,0.12)",
+                    "0px 8px 10px -5px rgba(0,0,0,0.2),0px 16px 24px 2px rgba(0,0,0,0.14),0px 6px 30px 5px rgba(0,0,0,0.12)",
+                    "0px 8px 11px -5px rgba(0,0,0,0.2),0px 17px 26px 2px rgba(0,0,0,0.14),0px 6px 32px 5px rgba(0,0,0,0.12)",
+                    "0px 9px 11px -5px rgba(0,0,0,0.2),0px 18px 28px 2px rgba(0,0,0,0.14),0px 7px 34px 6px rgba(0,0,0,0.12)",
+                    "0px 9px 12px -6px rgba(0,0,0,0.2),0px 19px 29px 2px rgba(0,0,0,0.14),0px 7px 36px 6px rgba(0,0,0,0.12)",
+                    "0px 10px 13px -6px rgba(0,0,0,0.2),0px 20px 31px 3px rgba(0,0,0,0.14),0px 8px 38px 7px rgba(0,0,0,0.12)",
+                    "0px 10px 13px -6px rgba(0,0,0,0.2),0px 21px 33px 3px rgba(0,0,0,0.14),0px 8px 40px 7px rgba(0,0,0,0.12)",
+                    "0px 10px 14px -6px rgba(0,0,0,0.2),0px 22px 35px 3px rgba(0,0,0,0.14),0px 8px 42px 7px rgba(0,0,0,0.12)",
+                    "0 50px 100px -20px rgba(50, 50, 93, 0.25), 0 30px 60px -30px rgba(0, 0, 0, 0.30)",
+                    "2.8px 2.8px 2.2px rgba(0, 0, 0, 0.02),6.7px 6.7px 5.3px rgba(0, 0, 0, 0.028),12.5px 12.5px 10px rgba(0, 0, 0, 0.035),22.3px 22.3px 17.9px rgba(0, 0, 0, 0.042),41.8px 41.8px 33.4px rgba(0, 0, 0, 0.05),100px 100px 80px rgba(0, 0, 0, 0.07)",
+                    "0px 0px 20px 0px rgba(0, 0, 0, 0.05)",
+                },
             },
-            LayoutProperties = new()
-            {
-                DefaultBorderRadius = "4px",
-                AppbarHeight = "68px",
-            },
+            LayoutProperties = new() { DefaultBorderRadius = "4px", AppbarHeight = "68px" },
             ZIndex = new ZIndex(),
             Typography = new()
             {
-
                 Default = new DefaultTypography
                 {
                     FontSize = ".8125rem",
                     FontWeight = "400",
                     LineHeight = "1.4",
                     LetterSpacing = "normal",
-                    FontFamily = ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "Noto Sans", "Helvetica", "Arial", "sans-serif", "Apple Color Emoji", "Segoe UI Emoji"]
+                    FontFamily =
+                    [
+                        "-apple-system",
+                        "BlinkMacSystemFont",
+                        "Segoe UI",
+                        "Noto Sans",
+                        "Helvetica",
+                        "Arial",
+                        "sans-serif",
+                        "Apple Color Emoji",
+                        "Segoe UI Emoji",
+                    ],
                 },
                 H1 = new H1Typography
                 {
                     FontSize = "2.2rem",
                     FontWeight = "700",
                     LineHeight = "2.5",
-                    LetterSpacing = "-.01562em"
+                    LetterSpacing = "-.01562em",
                 },
                 H2 = new H2Typography
                 {
                     FontSize = "2rem",
                     FontWeight = "600",
                     LineHeight = "2.3",
-                    LetterSpacing = "-.00833em"
+                    LetterSpacing = "-.00833em",
                 },
                 H3 = new H3Typography
                 {
                     FontSize = "1.75rem",
                     FontWeight = "600",
                     LineHeight = "2.2",
-                    LetterSpacing = "0"
+                    LetterSpacing = "0",
                 },
                 H4 = new H4Typography
                 {
                     FontSize = "1.5rem",
                     FontWeight = "500",
                     LineHeight = "2.2",
-                    LetterSpacing = ".00735em"
+                    LetterSpacing = ".00735em",
                 },
                 H5 = new H5Typography
                 {
                     FontSize = "1.25rem",
                     FontWeight = "500",
                     LineHeight = "1.8",
-                    LetterSpacing = "0"
+                    LetterSpacing = "0",
                 },
                 H6 = new H6Typography
                 {
                     FontSize = "1rem",
                     FontWeight = "500",
                     LineHeight = "1.6",
-                    LetterSpacing = ".0075em"
+                    LetterSpacing = ".0075em",
                 },
                 Button = new ButtonTypography
                 {
@@ -207,7 +215,7 @@ public class Theme
                     FontWeight = "500",
                     LineHeight = "1.75",
                     LetterSpacing = ".02857em",
-                    TextTransform = "uppercase"
+                    TextTransform = "uppercase",
                 },
                 Subtitle1 = new Subtitle1Typography
                 {
@@ -215,46 +223,45 @@ public class Theme
                     FontWeight = "400",
                     LineHeight = "1.5",
                     LetterSpacing = "normal",
-                    FontFamily = ["Public Sans", "Roboto", "Arial", "sans-serif"]
+                    FontFamily = ["Public Sans", "Roboto", "Arial", "sans-serif"],
                 },
                 Subtitle2 = new Subtitle2Typography
                 {
                     FontSize = ".8125rem",
                     FontWeight = "500",
                     LineHeight = "1.57",
-                    LetterSpacing = ".00714em"
+                    LetterSpacing = ".00714em",
                 },
                 Body1 = new Body1Typography
                 {
                     FontSize = "0.8125rem",
                     FontWeight = "400",
                     LineHeight = "1.5",
-                    LetterSpacing = ".00938em"
+                    LetterSpacing = ".00938em",
                 },
                 Body2 = new Body2Typography
                 {
                     FontSize = ".75rem",
                     FontWeight = "300",
                     LineHeight = "1.43",
-                    LetterSpacing = ".01071em"
+                    LetterSpacing = ".01071em",
                 },
                 Caption = new CaptionTypography
                 {
                     FontSize = "0.625rem",
                     FontWeight = "400",
                     LineHeight = "1.5",
-                    LetterSpacing = ".03333em"
+                    LetterSpacing = ".03333em",
                 },
                 Overline = new OverlineTypography
                 {
                     FontSize = "0.625rem",
                     FontWeight = "300",
                     LineHeight = "2",
-                    LetterSpacing = ".08333em"
-                }
-            }
+                    LetterSpacing = ".08333em",
+                },
+            },
         };
         return theme;
     }
-
 }

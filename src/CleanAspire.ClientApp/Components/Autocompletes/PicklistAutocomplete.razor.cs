@@ -1,4 +1,7 @@
-﻿
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
@@ -19,7 +22,10 @@ public class PicklistAutocomplete<T> : MudAutocomplete<string>
 
     public Dictionary<PicklistType, string[]> Data => PicklistDataSource.Data;
 
-    private Task<IEnumerable<string>> SearchFunc_(string? value, CancellationToken cancellation = default)
+    private Task<IEnumerable<string>> SearchFunc_(
+        string? value,
+        CancellationToken cancellation = default
+    )
     {
         if (!Data.ContainsKey(Picklist))
             return Task.FromResult(Enumerable.Empty<string>());
@@ -29,7 +35,8 @@ public class PicklistAutocomplete<T> : MudAutocomplete<string>
         if (string.IsNullOrEmpty(value))
             return Task.FromResult(list.AsEnumerable());
 
-        return Task.FromResult(list.Where(x =>
-            x.Contains(value, StringComparison.InvariantCultureIgnoreCase)));
+        return Task.FromResult(
+            list.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase))
+        );
     }
 }

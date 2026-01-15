@@ -1,6 +1,11 @@
-﻿using CleanAspire.Application.Features.Products.DTOs;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using CleanAspire.Application.Features.Products.DTOs;
 
 namespace CleanAspire.Application.Features.Products.Queries;
+
 /// <summary>
 /// Query to fetch all products.
 /// Implements IFusionCacheRequest to enable caching for performance optimization.
@@ -41,10 +46,13 @@ public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, L
     /// <param name="request">The query request.</param>
     /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
     /// <returns>A list of ProductDto objects.</returns>
-    public async ValueTask<List<ProductDto>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
+    public async ValueTask<List<ProductDto>> Handle(
+        GetAllProductsQuery request,
+        CancellationToken cancellationToken
+    )
     {
-        var products = await _dbContext.Products
-            .OrderBy(x => x.Name) // Sort by product name
+        var products = await _dbContext
+            .Products.OrderBy(x => x.Name) // Sort by product name
             .Select(t => new ProductDto // Map to ProductDto
             {
                 Id = t.Id,
@@ -54,7 +62,7 @@ public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, L
                 Description = t.Description,
                 Price = t.Price,
                 Currency = t.Currency,
-                UOM = t.UOM
+                UOM = t.UOM,
             })
             .ToListAsync(cancellationToken); // Execute query and return list
 

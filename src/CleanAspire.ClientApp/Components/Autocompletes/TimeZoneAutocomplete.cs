@@ -1,4 +1,8 @@
-﻿using MudBlazor;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using MudBlazor;
 
 namespace CleanAspire.ClientApp.Components.Autocompletes;
 
@@ -18,18 +22,19 @@ public class TimeZoneAutocomplete<T> : MudAutocomplete<string>
 
     private List<TimeZoneInfo> TimeZones { get; set; } = TimeZoneInfo.GetSystemTimeZones().ToList();
 
-    private Task<IEnumerable<string>> SearchFunc_(string value, CancellationToken cancellation = default)
+    private Task<IEnumerable<string>> SearchFunc_(
+        string value,
+        CancellationToken cancellation = default
+    )
     {
         return string.IsNullOrEmpty(value)
             ? Task.FromResult(TimeZones.Select(tz => tz.Id).AsEnumerable())
-            : Task.FromResult(TimeZones
-                .Where(tz => Contains(tz, value))
-                .Select(tz => tz.Id));
+            : Task.FromResult(TimeZones.Where(tz => Contains(tz, value)).Select(tz => tz.Id));
     }
 
     private static bool Contains(TimeZoneInfo timeZone, string value)
     {
-        return timeZone.DisplayName.Contains(value, StringComparison.InvariantCultureIgnoreCase) ||
-               timeZone.Id.Contains(value, StringComparison.InvariantCultureIgnoreCase);
+        return timeZone.DisplayName.Contains(value, StringComparison.InvariantCultureIgnoreCase)
+            || timeZone.Id.Contains(value, StringComparison.InvariantCultureIgnoreCase);
     }
 }

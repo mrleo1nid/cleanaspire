@@ -5,7 +5,9 @@
 using FluentValidation.Results;
 
 namespace CleanAspire.Application.Pipeline;
-public sealed class MessageValidatorBehaviour<TMessage, TResponse> : MessagePreProcessor<TMessage, TResponse>
+
+public sealed class MessageValidatorBehaviour<TMessage, TResponse>
+    : MessagePreProcessor<TMessage, TResponse>
     where TMessage : IMessage, IRequiresValidation
 {
     private readonly IReadOnlyCollection<IValidator<TMessage>> _validators;
@@ -15,9 +17,7 @@ public sealed class MessageValidatorBehaviour<TMessage, TResponse> : MessagePreP
         _validators = validators.ToList() ?? throw new ArgumentNullException(nameof(validators));
     }
 
-    protected override async ValueTask Handle(TMessage message,
-        CancellationToken cancellationToken
-       )
+    protected override async ValueTask Handle(TMessage message, CancellationToken cancellationToken)
     {
         var context = new ValidationContext<TMessage>(message);
         var validationResult = await _validators.ValidateAsync(context, cancellationToken);
@@ -25,36 +25,35 @@ public sealed class MessageValidatorBehaviour<TMessage, TResponse> : MessagePreP
         {
             throw new ValidationException(validationResult);
         }
-
     }
 }
-
 
 public static class ValidationExtensions
 {
     public static async Task<List<ValidationFailure>> ValidateAsync<TRequest>(
-        this IEnumerable<IValidator<TRequest>> validators, ValidationContext<TRequest> validationContext,
-        CancellationToken cancellationToken = default)
+        this IEnumerable<IValidator<TRequest>> validators,
+        ValidationContext<TRequest> validationContext,
+        CancellationToken cancellationToken = default
+    )
     {
-        if (!validators.Any()) return new List<ValidationFailure>();
+        if (!validators.Any())
+            return new List<ValidationFailure>();
 
         var validationResults = await Task.WhenAll(
-            validators.Select(v => v.ValidateAsync(validationContext, cancellationToken)));
+            validators.Select(v => v.ValidateAsync(validationContext, cancellationToken))
+        );
 
-        return validationResults
-            .SelectMany(r => r.Errors)
-            .Where(f => f != null)
-            .ToList();
+        return validationResults.SelectMany(r => r.Errors).Where(f => f != null).ToList();
     }
 
     public static Dictionary<string, string[]> ToDictionary(this List<ValidationFailure>? failures)
     {
         return failures != null && failures.Any()
-            ? failures.GroupBy(e => e.PropertyName, e => e.ErrorMessage)
+            ? failures
+                .GroupBy(e => e.PropertyName, e => e.ErrorMessage)
                 .ToDictionary(g => g.Key, g => g.ToArray())
             : new Dictionary<string, string[]>();
     }
 }
-public interface IRequiresValidation
-{
-}
+
+public interface IRequiresValidation { }

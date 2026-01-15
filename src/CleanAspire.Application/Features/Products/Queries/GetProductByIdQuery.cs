@@ -1,6 +1,11 @@
-﻿using CleanAspire.Application.Features.Products.DTOs;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using CleanAspire.Application.Features.Products.DTOs;
 
 namespace CleanAspire.Application.Features.Products.Queries;
+
 /// <summary>
 /// Query to fetch a product by its ID.
 /// Implements IFusionCacheRequest to enable caching.
@@ -42,22 +47,25 @@ public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, P
     /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
     /// <returns>The ProductDto if found, or null otherwise.</returns>
     /// <exception cref="KeyNotFoundException">Thrown if the product with the specified ID is not found.</exception>
-    public async ValueTask<ProductDto?> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
+    public async ValueTask<ProductDto?> Handle(
+        GetProductByIdQuery request,
+        CancellationToken cancellationToken
+    )
     {
-        var product = await _dbContext.Products
-                            .Where(p => p.Id == request.Id) // Filter by product ID
-                            .Select(p => new ProductDto // Map to ProductDto
-                            {
-                                Id = p.Id,
-                                SKU = p.SKU,
-                                Name = p.Name,
-                                Category = p.Category, // Cast to ProductCategoryDto
-                                Description = p.Description,
-                                Price = p.Price,
-                                Currency = p.Currency,
-                                UOM = p.UOM
-                            })
-                            .SingleOrDefaultAsync(cancellationToken); // Get single result or default to null
+        var product = await _dbContext
+            .Products.Where(p => p.Id == request.Id) // Filter by product ID
+            .Select(p => new ProductDto // Map to ProductDto
+            {
+                Id = p.Id,
+                SKU = p.SKU,
+                Name = p.Name,
+                Category = p.Category, // Cast to ProductCategoryDto
+                Description = p.Description,
+                Price = p.Price,
+                Currency = p.Currency,
+                UOM = p.UOM,
+            })
+            .SingleOrDefaultAsync(cancellationToken); // Get single result or default to null
 
         if (product == null)
         {

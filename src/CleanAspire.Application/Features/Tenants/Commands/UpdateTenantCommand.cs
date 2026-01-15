@@ -4,26 +4,36 @@
 
 namespace CleanAspire.Application.Features.Tenants.Commands;
 
-public record UpdateTenantCommand(string Id, string Name, string Description) : IFusionCacheRefreshRequest<Unit>
+public record UpdateTenantCommand(string Id, string Name, string Description)
+    : IFusionCacheRefreshRequest<Unit>
 {
     public IEnumerable<string>? Tags => new[] { "tenants" };
 }
 
-public class UpdateTenantCommandHandler : IRequestHandler<UpdateTenantCommand,Unit>
+public class UpdateTenantCommandHandler : IRequestHandler<UpdateTenantCommand, Unit>
 {
     private readonly ILogger<UpdateTenantCommandHandler> _logger;
     private readonly IApplicationDbContext _dbContext;
 
-    public UpdateTenantCommandHandler(ILogger<UpdateTenantCommandHandler> logger, IApplicationDbContext dbContext)
+    public UpdateTenantCommandHandler(
+        ILogger<UpdateTenantCommandHandler> logger,
+        IApplicationDbContext dbContext
+    )
     {
         _logger = logger;
         _dbContext = dbContext;
     }
 
-    public async ValueTask<Unit> Handle(UpdateTenantCommand request, CancellationToken cancellationToken)
+    public async ValueTask<Unit> Handle(
+        UpdateTenantCommand request,
+        CancellationToken cancellationToken
+    )
     {
         // Logic to update tenant in the database
-        var tenant = await _dbContext.Tenants.FindAsync(new object[] { request.Id }, cancellationToken);
+        var tenant = await _dbContext.Tenants.FindAsync(
+            new object[] { request.Id },
+            cancellationToken
+        );
         if (tenant == null)
         {
             _logger.LogError($"Tenant with Id {request.Id} not found.");

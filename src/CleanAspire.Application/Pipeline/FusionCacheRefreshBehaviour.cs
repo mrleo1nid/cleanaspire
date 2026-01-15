@@ -1,12 +1,16 @@
-﻿namespace CleanAspire.Application.Pipeline;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
+namespace CleanAspire.Application.Pipeline;
 
 /// <summary>
 /// Pipeline behavior for handling FusionCache refresh requests.
 /// </summary>
 /// <typeparam name="TRequest">The type of the request.</typeparam>
 /// <typeparam name="TResponse">The type of the response.</typeparam>
-public class FusionCacheRefreshBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+public class FusionCacheRefreshBehaviour<TRequest, TResponse>
+    : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IFusionCacheRefreshRequest<TResponse>
 {
     private readonly IFusionCache _cache;
@@ -33,10 +37,17 @@ public class FusionCacheRefreshBehaviour<TRequest, TResponse> : IPipelineBehavio
     /// <param name="next">The next delegate in the pipeline.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The response from the next delegate in the pipeline.</returns>
-    public async ValueTask<TResponse> Handle(TRequest request, MessageHandlerDelegate<TRequest, TResponse> next,
-        CancellationToken cancellationToken)
+    public async ValueTask<TResponse> Handle(
+        TRequest request,
+        MessageHandlerDelegate<TRequest, TResponse> next,
+        CancellationToken cancellationToken
+    )
     {
-        _logger.LogTrace("Handling request of type {RequestType} with details {@Request}", nameof(request), request);
+        _logger.LogTrace(
+            "Handling request of type {RequestType} with details {@Request}",
+            nameof(request),
+            request
+        );
         var response = await next(request, cancellationToken).ConfigureAwait(false);
         if (!string.IsNullOrEmpty(request.CacheKey))
         {

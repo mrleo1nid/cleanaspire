@@ -1,13 +1,16 @@
-﻿using CleanAspire.Application.Common.Interfaces;
-using CleanAspire.Domain.Common;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using System.Reflection;
+using CleanAspire.Application.Common.Interfaces;
 using CleanAspire.Domain.Entities;
 using CleanAspire.Domain.Identities;
-using CleanAspire.Infrastructure.Persistence.Extensions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
 
 namespace CleanAspire.Infrastructure.Persistence;
+
 /// <summary>
 /// Represents the application database context.
 /// </summary>
@@ -18,9 +21,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// </summary>
     /// <param name="options">The options to be used by a <see cref="DbContext"/>.</param>
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-       : base(options)
-    {
-    }
+        : base(options) { }
 
     /// <summary>
     /// Gets or sets the Tenants DbSet.
@@ -62,4 +63,3 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         configurationBuilder.Properties<string>().HaveMaxLength(450);
     }
 }
-

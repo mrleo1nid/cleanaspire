@@ -1,16 +1,13 @@
-﻿// Summary:
-// This file defines a command and its handler for updating product details in the database. 
-// The UpdateProductCommand encapsulates the necessary data to update a product, while the 
-// UpdateProductCommandHandler validates the product's existence, updates its details, 
-// triggers a domain event such as ProductUpdatedEvent, and commits the changes.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
-using CleanAspire.Application.Features.Products.DTOs;
 using CleanAspire.Application.Features.Products.EventHandlers;
 using CleanAspire.Application.Pipeline;
 
 namespace CleanAspire.Application.Features.Products.Commands;
 
-// Command object that encapsulates the data required to update a product. 
+// Command object that encapsulates the data required to update a product.
 // Each field corresponds to a property in ProductDto.
 public record UpdateProductCommand(
     string Id,
@@ -21,8 +18,7 @@ public record UpdateProductCommand(
     decimal Price,
     string? Currency,
     string? UOM
-) : IFusionCacheRefreshRequest<Unit>,
-    IRequiresValidation
+) : IFusionCacheRefreshRequest<Unit>, IRequiresValidation
 {
     public IEnumerable<string>? Tags => new[] { "products" };
 }
@@ -36,9 +32,15 @@ public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand,
         _context = context;
     }
 
-    public async ValueTask<Unit> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
+    public async ValueTask<Unit> Handle(
+        UpdateProductCommand request,
+        CancellationToken cancellationToken
+    )
     {
-        var product = await _context.Products.FindAsync(new object[] { request.Id }, cancellationToken);
+        var product = await _context.Products.FindAsync(
+            new object[] { request.Id },
+            cancellationToken
+        );
         if (product == null)
         {
             throw new KeyNotFoundException($"Product with Id '{request.Id}' was not found.");

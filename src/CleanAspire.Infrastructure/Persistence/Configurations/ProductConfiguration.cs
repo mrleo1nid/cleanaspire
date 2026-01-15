@@ -1,5 +1,6 @@
-﻿// This class configures the database schema for the Product entity.
-// It implements IEntityTypeConfiguration<Product> to define the entity's properties, constraints, and relationships at the database level.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 // Purpose:
 // 1. Map the Product entity to the database with specific configurations for its properties.
@@ -12,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CleanAspire.Infrastructure.Persistence.Configurations;
+
 /// <summary>
 /// Configures the Product entity.
 /// </summary>

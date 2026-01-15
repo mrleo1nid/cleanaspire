@@ -1,4 +1,8 @@
-﻿using CleanAspire.Domain.Common;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using CleanAspire.Domain.Common;
 
 namespace CleanAspire.Domain.Entities;
 
@@ -42,7 +46,6 @@ public class Product : BaseAuditableEntity, IAuditTrial
     /// </summary>
     public string? UOM { get; set; }
 }
-
 
 /// <summary>
 /// Represents the category of a product.

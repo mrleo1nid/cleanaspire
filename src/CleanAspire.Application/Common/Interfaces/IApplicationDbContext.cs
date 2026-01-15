@@ -1,4 +1,8 @@
-﻿namespace CleanAspire.Application.Common.Interfaces;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+namespace CleanAspire.Application.Common.Interfaces;
 
 /// <summary>
 /// Represents the application database context interface.
@@ -32,4 +36,3 @@ public interface IApplicationDbContext
     /// <returns>A task that represents the asynchronous save operation. The task result contains the number of state entries written to the database.</returns>
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
-

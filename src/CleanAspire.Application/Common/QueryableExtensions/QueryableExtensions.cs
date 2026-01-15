@@ -1,8 +1,13 @@
-﻿using System.Linq.Expressions;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using System.Linq.Expressions;
 using System.Reflection;
 using CleanAspire.Domain.Common;
 
 namespace CleanAspire.Application.Common;
+
 public static class QueryableExtensions
 {
     #region OrderBy
@@ -11,28 +16,46 @@ public static class QueryableExtensions
         return ApplyOrder(source, orderByProperty, "OrderBy");
     }
 
-    public static IOrderedQueryable<T> OrderByDescending<T>(this IQueryable<T> source, string orderByProperty)
+    public static IOrderedQueryable<T> OrderByDescending<T>(
+        this IQueryable<T> source,
+        string orderByProperty
+    )
     {
         return ApplyOrder(source, orderByProperty, "OrderByDescending");
     }
 
-    public static IOrderedQueryable<T> ThenBy<T>(this IOrderedQueryable<T> source, string orderByProperty)
+    public static IOrderedQueryable<T> ThenBy<T>(
+        this IOrderedQueryable<T> source,
+        string orderByProperty
+    )
     {
         return ApplyOrder(source, orderByProperty, "ThenBy");
     }
 
-    public static IOrderedQueryable<T> ThenByDescending<T>(this IOrderedQueryable<T> source, string orderByProperty)
+    public static IOrderedQueryable<T> ThenByDescending<T>(
+        this IOrderedQueryable<T> source,
+        string orderByProperty
+    )
     {
         return ApplyOrder(source, orderByProperty, "ThenByDescending");
     }
 
-    private static IOrderedQueryable<T> ApplyOrder<T>(IQueryable<T> source, string property, string methodName)
+    private static IOrderedQueryable<T> ApplyOrder<T>(
+        IQueryable<T> source,
+        string property,
+        string methodName
+    )
     {
         var type = typeof(T);
-        var propertyInfo = type.GetProperty(property, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+        var propertyInfo = type.GetProperty(
+            property,
+            BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase
+        );
         if (propertyInfo == null)
         {
-            throw new ArgumentException($"Property '{property}' does not exist on type '{type.Name}'.");
+            throw new ArgumentException(
+                $"Property '{property}' does not exist on type '{type.Name}'."
+            );
         }
 
         var parameter = Expression.Parameter(type, "x");
@@ -44,12 +67,17 @@ public static class QueryableExtensions
             methodName,
             new[] { type, propertyInfo.PropertyType },
             source.Expression,
-            Expression.Quote(orderByExpression));
+            Expression.Quote(orderByExpression)
+        );
 
         return (IOrderedQueryable<T>)source.Provider.CreateQuery<T>(resultExpression);
     }
 
-    public static IOrderedQueryable<T> OrderBy<T>(this IQueryable<T> source, string orderBy, string sortDirection)
+    public static IOrderedQueryable<T> OrderBy<T>(
+        this IQueryable<T> source,
+        string orderBy,
+        string sortDirection
+    )
     {
         return sortDirection.Equals("Descending", StringComparison.OrdinalIgnoreCase)
             ? source.OrderByDescending(orderBy)
@@ -62,7 +90,9 @@ public static class QueryableExtensions
         int pageNumber,
         int pageSize,
         Func<T, TResult> mapperFunc,
-        CancellationToken cancellationToken = default) where T : class, IEntity
+        CancellationToken cancellationToken = default
+    )
+        where T : class, IEntity
     {
         if (condition != null)
         {

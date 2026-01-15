@@ -1,4 +1,8 @@
-﻿using CleanAspire.ClientApp.Services;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using CleanAspire.ClientApp.Services;
 using MudBlazor;
 
 namespace CleanAspire.ClientApp.Components.Autocompletes;
@@ -12,26 +16,32 @@ public class LanguageAutocomplete<T> : MudAutocomplete<string>
         ResetValueOnEmptyText = true;
         ToStringFunc = x =>
         {
-            var language = Languages.FirstOrDefault(lang => lang.Code.Equals(x, StringComparison.OrdinalIgnoreCase));
+            var language = Languages.FirstOrDefault(lang =>
+                lang.Code.Equals(x, StringComparison.OrdinalIgnoreCase)
+            );
             return language != null ? $"{language.DisplayName}" : x;
         };
     }
 
-    private List<LanguageCode> Languages { get; set; } = SupportedLocalization.SupportedLanguages.ToList();
+    private List<LanguageCode> Languages { get; set; } =
+        SupportedLocalization.SupportedLanguages.ToList();
 
-    private Task<IEnumerable<string>> SearchFunc_(string value, CancellationToken cancellation = default)
+    private Task<IEnumerable<string>> SearchFunc_(
+        string value,
+        CancellationToken cancellation = default
+    )
     {
         // 如果输入为空，返回完整的语言列表；否则进行模糊搜索
         return string.IsNullOrEmpty(value)
             ? Task.FromResult(Languages.Select(lang => lang.Code).AsEnumerable())
-            : Task.FromResult(Languages
-                .Where(lang => Contains(lang, value))
-                .Select(lang => lang.Code));
+            : Task.FromResult(
+                Languages.Where(lang => Contains(lang, value)).Select(lang => lang.Code)
+            );
     }
 
     private static bool Contains(LanguageCode language, string value)
     {
-        return language.Code.Contains(value, StringComparison.InvariantCultureIgnoreCase) ||
-               language.DisplayName.Contains(value, StringComparison.InvariantCultureIgnoreCase);
+        return language.Code.Contains(value, StringComparison.InvariantCultureIgnoreCase)
+            || language.DisplayName.Contains(value, StringComparison.InvariantCultureIgnoreCase);
     }
 }

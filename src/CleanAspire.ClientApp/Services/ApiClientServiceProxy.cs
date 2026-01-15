@@ -1,4 +1,8 @@
-﻿using CleanAspire.Api.Client.Models;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using CleanAspire.Api.Client.Models;
 using CleanAspire.ClientApp.Services.JsInterop;
 using Microsoft.Kiota.Abstractions;
 using OneOf;
@@ -21,10 +25,21 @@ public class ApiClientServiceProxy(ILogger<ApiClientServiceProxy> logger, Indexe
     /// <param name="tags">Optional tags to associate with the cached data.</param>
     /// <param name="expiration">Optional expiration time for the cached data.</param>
     /// <returns>The cached or fetched data.</returns>
-    public async Task<TResponse?> QueryAsync<TResponse>(string cacheKey, Func<Task<TResponse?>> factory, string[]? tags = null, TimeSpan? expiration = null)
+    public async Task<TResponse?> QueryAsync<TResponse>(
+        string cacheKey,
+        Func<Task<TResponse?>> factory,
+        string[]? tags = null,
+        TimeSpan? expiration = null
+    )
     {
         cacheKey = $"{cacheKey}";
-        return await cache.GetOrSetAsync(IndexedDbCache.DATABASENAME, cacheKey, factory, tags, expiration);
+        return await cache.GetOrSetAsync(
+            IndexedDbCache.DATABASENAME,
+            cacheKey,
+            factory,
+            tags,
+            expiration
+        );
     }
 
     /// <summary>
@@ -42,7 +57,9 @@ public class ApiClientServiceProxy(ILogger<ApiClientServiceProxy> logger, Indexe
     /// <typeparam name="TResponse">The type of the response data.</typeparam>
     /// <param name="apiCall">The API call function to be executed.</param>
     /// <returns>The result of the API call or error details.</returns>
-    public async Task<OneOf<TResponse, HttpValidationProblemDetails, ProblemDetails>> ExecuteAsync<TResponse>(Func<Task<TResponse>> apiCall)
+    public async Task<
+        OneOf<TResponse, HttpValidationProblemDetails, ProblemDetails>
+    > ExecuteAsync<TResponse>(Func<Task<TResponse>> apiCall)
     {
         try
         {
@@ -79,5 +96,3 @@ public class ApiClientServiceProxy(ILogger<ApiClientServiceProxy> logger, Indexe
         }
     }
 }
-
-

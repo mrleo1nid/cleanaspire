@@ -1,15 +1,18 @@
-﻿
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
 using System.Globalization;
 using CleanAspire.Application.Features.Products.DTOs;
 using CsvHelper;
 
 namespace CleanAspire.Application.Features.Products.Queries;
+
 /// <summary>
 /// Represents a query to export products based on specified keywords.
 /// </summary>
 /// <param name="Keywords">The keywords to filter products by SKU, Name, or Description.</param>
 public record ExportProductsQuery(string Keywords) : IRequest<Stream>;
-
 
 /// <summary>
 /// Handles the export of products based on the provided query.
@@ -33,10 +36,17 @@ public class ExportProductsQueryHandler : IRequestHandler<ExportProductsQuery, S
     /// <param name="request">The export products query request.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A stream containing the CSV data of the filtered products.</returns>
-    public async ValueTask<Stream> Handle(ExportProductsQuery request, CancellationToken cancellationToken)
+    public async ValueTask<Stream> Handle(
+        ExportProductsQuery request,
+        CancellationToken cancellationToken
+    )
     {
-        var data = await _context.Products
-            .Where(x => x.SKU.Contains(request.Keywords) || x.Name.Contains(request.Keywords) || x.Description.Contains(request.Keywords))
+        var data = await _context
+            .Products.Where(x =>
+                x.SKU.Contains(request.Keywords)
+                || x.Name.Contains(request.Keywords)
+                || x.Description.Contains(request.Keywords)
+            )
             .Select(t => new ProductDto
             {
                 Id = t.Id,
@@ -46,8 +56,9 @@ public class ExportProductsQueryHandler : IRequestHandler<ExportProductsQuery, S
                 SKU = t.SKU,
                 UOM = t.UOM,
                 Currency = t.Currency,
-                Category = t.Category
-            }).ToListAsync(cancellationToken);
+                Category = t.Category,
+            })
+            .ToListAsync(cancellationToken);
 
         var stream = new MemoryStream();
         using (var writer = new StreamWriter(stream, leaveOpen: true))

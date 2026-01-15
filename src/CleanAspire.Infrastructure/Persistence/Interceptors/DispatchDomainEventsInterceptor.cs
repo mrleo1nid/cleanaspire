@@ -1,10 +1,13 @@
-﻿using CleanAspire.Domain.Common;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using CleanAspire.Domain.Common;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace  CleanAspire.Infrastructure.Persistence.Interceptors;
-
+namespace CleanAspire.Infrastructure.Persistence.Interceptors;
 
 /// <summary>
 /// Interceptor for dispatching domain events when saving changes in the database.
@@ -23,29 +26,36 @@ public class DispatchDomainEventsInterceptor : SaveChangesInterceptor
     }
 
     /// <inheritdoc/>
-    public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData,
-        InterceptionResult<int> result, CancellationToken cancellationToken = default)
+    public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(
+        DbContextEventData eventData,
+        InterceptionResult<int> result,
+        CancellationToken cancellationToken = default
+    )
     {
         var context = eventData.Context;
         if (context == null)
             return await base.SavingChangesAsync(eventData, result, cancellationToken);
 
-        var domainEventEntities = context.ChangeTracker
-            .Entries<BaseEntity>()
+        var domainEventEntities = context
+            .ChangeTracker.Entries<BaseEntity>()
             .Where(e => e.Entity.DomainEvents.Any() && e.State == EntityState.Deleted)
             .Select(e => e.Entity)
             .ToList();
 
-        var domainEvents = domainEventEntities
-            .SelectMany(e => e.DomainEvents)
-            .ToList();
+        var domainEvents = domainEventEntities.SelectMany(e => e.DomainEvents).ToList();
 
         if (domainEvents.Any())
         {
-            await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+            await using var transaction = await context.Database.BeginTransactionAsync(
+                cancellationToken
+            );
             try
             {
-                var saveResult = await base.SavingChangesAsync(eventData, result, cancellationToken);
+                var saveResult = await base.SavingChangesAsync(
+                    eventData,
+                    result,
+                    cancellationToken
+                );
 
                 domainEventEntities.ForEach(e => e.ClearDomainEvents());
                 foreach (var domainEvent in domainEvents)
@@ -67,26 +77,29 @@ public class DispatchDomainEventsInterceptor : SaveChangesInterceptor
     }
 
     /// <inheritdoc/>
-    public override async ValueTask<int> SavedChangesAsync(SaveChangesCompletedEventData eventData, int result,
-        CancellationToken cancellationToken = default)
+    public override async ValueTask<int> SavedChangesAsync(
+        SaveChangesCompletedEventData eventData,
+        int result,
+        CancellationToken cancellationToken = default
+    )
     {
         var context = eventData.Context;
         if (context == null)
             return await base.SavedChangesAsync(eventData, result, cancellationToken);
 
-        var domainEventEntities = context.ChangeTracker
-            .Entries<BaseEntity>()
+        var domainEventEntities = context
+            .ChangeTracker.Entries<BaseEntity>()
             .Where(e => e.Entity.DomainEvents.Any() && e.State != EntityState.Deleted)
             .Select(e => e.Entity)
             .ToList();
 
-        var domainEvents = domainEventEntities
-            .SelectMany(e => e.DomainEvents)
-            .ToList();
+        var domainEvents = domainEventEntities.SelectMany(e => e.DomainEvents).ToList();
 
         if (domainEvents.Any())
         {
-            await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+            await using var transaction = await context.Database.BeginTransactionAsync(
+                cancellationToken
+            );
             try
             {
                 var saveResult = await base.SavedChangesAsync(eventData, result, cancellationToken);

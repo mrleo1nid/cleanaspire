@@ -1,10 +1,11 @@
-﻿// Copyright (c) MudBlazor 2021
-// MudBlazor licenses this file to you under the MIT license.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using CleanAspire.ClientApp.Services.Interfaces;
 
 namespace CleanAspire.ClientApp.Services.UserPreferences;
+
 /// <summary>
 /// Service for managing user preferences.
 /// </summary>
@@ -23,7 +24,6 @@ public interface IUserPreferencesService
     /// <returns>UserPreferences object. Null when no settings were found.</returns>
     public Task<UserPreferences> LoadUserPreferences();
 }
-
 
 /// <summary>
 /// Implementation of the IUserPreferencesService interface.
@@ -54,5 +54,3 @@ public class UserPreferencesService : IUserPreferencesService
         return await _localStorage.GetItemAsync<UserPreferences>(Key) ?? new UserPreferences();
     }
 }
-
-

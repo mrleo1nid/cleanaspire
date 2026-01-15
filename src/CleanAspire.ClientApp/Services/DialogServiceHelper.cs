@@ -1,5 +1,6 @@
-﻿// This class provides helper methods to streamline the usage of the dialog service in a Blazor application.
-// It encapsulates dialog interactions, simplifying the process of showing confirmation and custom dialogs.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 // Purpose:
 // 1. **Reusable Dialog Logic**:
@@ -9,7 +10,6 @@
 // 2. **User Interaction**:
 //    - Enhances user experience by offering configurable dialogs for confirmations or custom content components.
 //    - Supports optional callback actions for both confirmation and cancellation scenarios.
-
 
 using CleanAspire.ClientApp.Components;
 using Microsoft.AspNetCore.Components;
@@ -34,13 +34,23 @@ public class DialogServiceHelper
     /// <param name="contentText">The content text of the confirmation dialog.</param>
     /// <param name="onConfirm">The action to be executed when the confirmation is confirmed.</param>
     /// <param name="onCancel">The optional action to be executed when the confirmation is canceled.</param>
-    public async Task ShowConfirmationDialog(string title, string contentText, Func<Task> onConfirm, Func<Task>? onCancel = null)
+    public async Task ShowConfirmationDialog(
+        string title,
+        string contentText,
+        Func<Task> onConfirm,
+        Func<Task>? onCancel = null
+    )
     {
         var parameters = new DialogParameters
         {
-            { nameof(ConfirmationDialog.ContentText), contentText }
+            { nameof(ConfirmationDialog.ContentText), contentText },
         };
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.ExtraSmall,
+            FullWidth = true,
+        };
         var dialog = await _dialogService.ShowAsync<ConfirmationDialog>(title, parameters, options);
         var result = await dialog.Result;
         if (result is not null && !result.Canceled)
@@ -58,9 +68,18 @@ public class DialogServiceHelper
         DialogParameters<T> parameters,
         DialogOptions? options = null,
         Func<DialogResult, Task>? onConfirm = null,
-        Func<Task>? onCancel = null) where T : ComponentBase
+        Func<Task>? onCancel = null
+    )
+        where T : ComponentBase
     {
-        options = options ?? new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        options =
+            options
+            ?? new DialogOptions
+            {
+                CloseButton = true,
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true,
+            };
         var dialog = await _dialogService.ShowAsync<T>(title, parameters, options);
         var result = await dialog.Result;
         if (result is not null && !result.Canceled && onConfirm is not null)
@@ -73,4 +92,3 @@ public class DialogServiceHelper
         }
     }
 }
-

@@ -1,4 +1,8 @@
-﻿using System.Text.Json;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using System.Text.Json;
 using Microsoft.JSInterop;
 
 namespace CleanAspire.ClientApp.Services.JsInterop;
@@ -32,10 +36,25 @@ public sealed class IndexedDbCache
     /// <param name="value">The data to save.</param>
     /// <param name="tags">Optional tags to associate with the data.</param>
     /// <param name="expiration">Optional expiration time for the data.</param>
-    public async Task SaveDataAsync<T>(string dbName, string key, T value, string[]? tags = null, TimeSpan? expiration = null)
+    public async Task SaveDataAsync<T>(
+        string dbName,
+        string key,
+        T value,
+        string[]? tags = null,
+        TimeSpan? expiration = null
+    )
     {
-        var expirationMs = expiration.HasValue ? (int)expiration.Value.TotalMilliseconds : (int?)null;
-        await _jsRuntime.InvokeVoidAsync("indexedDbStorage.saveData", dbName, key, value, tags ?? Array.Empty<string>(), expirationMs);
+        var expirationMs = expiration.HasValue
+            ? (int)expiration.Value.TotalMilliseconds
+            : (int?)null;
+        await _jsRuntime.InvokeVoidAsync(
+            "indexedDbStorage.saveData",
+            dbName,
+            key,
+            value,
+            tags ?? Array.Empty<string>(),
+            expirationMs
+        );
     }
 
     /// <summary>
@@ -48,7 +67,13 @@ public sealed class IndexedDbCache
     /// <param name="tags">Optional tags to associate with the data.</param>
     /// <param name="expiration">Optional expiration time for the data.</param>
     /// <returns>The data from the cache or the newly created data.</returns>
-    public async Task<T> GetOrSetAsync<T>(string dbName, string key, Func<Task<T>> factory, string[]? tags = null, TimeSpan? expiration = null)
+    public async Task<T> GetOrSetAsync<T>(
+        string dbName,
+        string key,
+        Func<Task<T>> factory,
+        string[]? tags = null,
+        TimeSpan? expiration = null
+    )
     {
         var existingData = await GetDataAsync<T>(dbName, key);
         if (existingData != null)
@@ -82,14 +107,21 @@ public sealed class IndexedDbCache
     /// <returns>A dictionary of key-value pairs of the data.</returns>
     public async Task<Dictionary<string, T>> GetDataByTagsAsync<T>(string dbName, string[] tags)
     {
-        var results = await _jsRuntime.InvokeAsync<List<Dictionary<string, object>>>("indexedDbStorage.getDataByTags", dbName, tags);
+        var results = await _jsRuntime.InvokeAsync<List<Dictionary<string, object>>>(
+            "indexedDbStorage.getDataByTags",
+            dbName,
+            tags
+        );
 
         return results.ToDictionary(
             result => result["key"].ToString(),
             result =>
             {
                 var jsonElement = result["value"];
-                return JsonSerializer.Deserialize<T>(jsonElement.ToString(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                return JsonSerializer.Deserialize<T>(
+                    jsonElement.ToString(),
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                );
             }
         );
     }

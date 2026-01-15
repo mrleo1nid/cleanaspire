@@ -1,5 +1,6 @@
-// This class acts as a service proxy for managing products, supporting both online and offline operations.
-// It integrates caching, offline synchronization, and API interactions to enhance the application's reliability and user experience.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 // Purpose:
 // 1. **Online/Offline Mode Support**:

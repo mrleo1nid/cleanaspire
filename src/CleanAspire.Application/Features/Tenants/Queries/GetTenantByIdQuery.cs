@@ -1,4 +1,8 @@
-﻿using CleanAspire.Application.Features.Tenants.DTOs;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using CleanAspire.Application.Features.Tenants.DTOs;
 
 namespace CleanAspire.Application.Features.Tenants.Queries;
 
@@ -17,9 +21,15 @@ public class GetTenantByIdQueryHandler : IRequestHandler<GetTenantByIdQuery, Ten
         _dbContext = dbContext;
     }
 
-    public async ValueTask<TenantDto?> Handle(GetTenantByIdQuery request, CancellationToken cancellationToken)
+    public async ValueTask<TenantDto?> Handle(
+        GetTenantByIdQuery request,
+        CancellationToken cancellationToken
+    )
     {
-        var tenant = await _dbContext.Tenants.FindAsync(new object[] { request.Id }, cancellationToken);
+        var tenant = await _dbContext.Tenants.FindAsync(
+            new object[] { request.Id },
+            cancellationToken
+        );
         if (tenant == null)
         {
             return null; // or throw an exception if preferred
@@ -28,7 +38,7 @@ public class GetTenantByIdQueryHandler : IRequestHandler<GetTenantByIdQuery, Ten
         {
             Id = tenant.Id,
             Name = tenant.Name,
-            Description = tenant.Description
+            Description = tenant.Description,
         };
     }
 }

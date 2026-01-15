@@ -1,5 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 namespace CleanAspire.ClientApp.Services;
 
@@ -9,46 +10,14 @@ public static class SupportedLocalization
 
     public static readonly LanguageCode[] SupportedLanguages =
     {
-        new()
-        {
-            Code = "en-US",
-            DisplayName = "English (United States)"
-        },
-        new()
-        {
-            Code = "zh-CN",
-            DisplayName = "中文（简体，中国）"
-        },
-        new()
-        {
-            Code = "de-DE",
-            DisplayName = "Deutsch (Deutschland)"
-        },
-        new()
-        {
-            Code = "fr-FR",
-            DisplayName = "français (France)"
-        },
-        new()
-        {
-            Code = "ja-JP",
-            DisplayName = "日本語 (日本)"
-        },
-        new()
-        {
-            Code = "es-ES",
-            DisplayName = "español (España)"
-        },
-        new()
-        {
-            Code = "ko-KR",
-            DisplayName = "한국어(대한민국)"
-        },
-        new()
-        {
-            Code = "pt-BR",
-            DisplayName = "português (Brasil)"
-        }
+        new() { Code = "en-US", DisplayName = "English (United States)" },
+        new() { Code = "zh-CN", DisplayName = "中文（简体，中国）" },
+        new() { Code = "de-DE", DisplayName = "Deutsch (Deutschland)" },
+        new() { Code = "fr-FR", DisplayName = "français (France)" },
+        new() { Code = "ja-JP", DisplayName = "日本語 (日本)" },
+        new() { Code = "es-ES", DisplayName = "español (España)" },
+        new() { Code = "ko-KR", DisplayName = "한국어(대한민국)" },
+        new() { Code = "pt-BR", DisplayName = "português (Brasil)" },
     };
 }
 

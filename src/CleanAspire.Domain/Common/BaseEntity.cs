@@ -1,5 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -9,7 +10,8 @@ public abstract class BaseEntity : IEntity<string>
 {
     private readonly List<DomainEvent> _domainEvents = new();
 
-    [NotMapped] public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+    [NotMapped]
+    public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
     public virtual string Id { get; set; } = Guid.CreateVersion7().ToString();
 

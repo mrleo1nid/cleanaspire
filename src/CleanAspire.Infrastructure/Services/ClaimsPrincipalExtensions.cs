@@ -1,6 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-
+// See the LICENSE file in the project root for more information.
 
 using System.Security.Claims;
 
@@ -8,7 +8,6 @@ namespace CleanArchitecture.Blazor.Infrastructure.Extensions;
 
 public static class ClaimsPrincipalExtensions
 {
-
     public static string? GetEmail(this ClaimsPrincipal claimsPrincipal)
     {
         return claimsPrincipal.FindFirstValue(ClaimTypes.Email);
@@ -76,9 +75,13 @@ public static class ClaimsPrincipalExtensions
 
     public static string[] GetRoles(this ClaimsPrincipal claimsPrincipal)
     {
-        return claimsPrincipal.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value).ToArray();
+        return claimsPrincipal
+            .Claims.Where(x => x.Type == ClaimTypes.Role)
+            .Select(x => x.Value)
+            .ToArray();
     }
 }
+
 public static class ApplicationClaimTypes
 {
     public const string Provider = "Provider";
