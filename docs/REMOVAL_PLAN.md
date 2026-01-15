@@ -434,14 +434,14 @@ Stock
 ---
 
 #### 📋 ШАГ 1: ДОКУМЕНТИРОВАНИЕ (ОБЯЗАТЕЛЬНО ПЕРЕД УДАЛЕНИЕМ)
-- [ ] Задокументировать Stock entity в IMPLEMENTATION_REFERENCE.md
-- [ ] Сохранить StockDispatchingCommand (бизнес-логика отправки со склада)
-- [ ] Сохранить StockReceivingCommand (бизнес-логика получения на склад)
-- [ ] Сохранить StocksWithPaginationQuery
-- [ ] Сохранить валидаторы (StockDispatchingCommandValidator, StockReceivingCommandValidator)
-- [ ] Сохранить UI компоненты (Index.razor, StockDialog.razor)
-- [ ] Сохранить StockConfiguration (EF Core с FK на Product)
-- [ ] Зафиксировать бизнес-операции dispatch/receive
+- [x] Задокументировать Stock entity в IMPLEMENTATION_REFERENCE.md
+- [x] Сохранить StockDispatchingCommand (бизнес-логика отправки со склада)
+- [x] Сохранить StockReceivingCommand (бизнес-логика получения на склад)
+- [x] Сохранить StocksWithPaginationQuery
+- [x] Сохранить валидаторы (StockDispatchingCommandValidator, StockReceivingCommandValidator)
+- [x] Сохранить UI компоненты (Index.razor, StockDialog.razor)
+- [x] Сохранить StockConfiguration (EF Core с FK на Product)
+- [x] Зафиксировать бизнес-операции dispatch/receive
 
 ---
 

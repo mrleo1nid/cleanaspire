@@ -405,37 +405,6 @@ public class ApplicationDbContextInitializer
         await _context.Products.AddRangeAsync(products);
         await _context.SaveChangesAsync();
         _logger.LogInformation("Products saved successfully.");
-
-        _logger.LogInformation("Creating stock entries...");
-        var stocks = new List<Stock>
-        {
-            new Stock
-            {
-                ProductId = products.FirstOrDefault(p => p.Name == "Ikea LACK Coffee Table")?.Id,
-                Product = products.FirstOrDefault(p => p.Name == "Ikea LACK Coffee Table"),
-                Quantity = 50,
-                Location = "FU-WH-0001",
-            },
-            new Stock
-            {
-                ProductId = products.FirstOrDefault(p => p.Name == "Nike Air Zoom Pegasus 40")?.Id,
-                Product = products.FirstOrDefault(p => p.Name == "Nike Air Zoom Pegasus 40"),
-                Quantity = 100,
-                Location = "SP-WH-0001",
-            },
-            new Stock
-            {
-                ProductId = products.FirstOrDefault(p => p.Name == "Apple iPhone 15 Pro")?.Id,
-                Product = products.FirstOrDefault(p => p.Name == "Apple iPhone 15 Pro"),
-                Quantity = 200,
-                Location = "EL-WH-0001",
-            },
-        };
-
-        _logger.LogInformation("Adding {Count} stock entries to database...", stocks.Count);
-        await _context.Stocks.AddRangeAsync(stocks);
-        await _context.SaveChangesAsync();
-        _logger.LogInformation("Stock entries saved successfully.");
         _logger.LogInformation("Data seeding completed successfully.");
     }
 }

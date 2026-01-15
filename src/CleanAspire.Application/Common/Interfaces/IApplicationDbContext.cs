@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -23,11 +23,6 @@ public interface IApplicationDbContext
     /// Gets or sets the Tenants DbSet.
     /// </summary>
     DbSet<Tenant> Tenants { get; set; }
-
-    /// <summary>
-    /// Gets or sets the Stocks DbSet.
-    /// </summary>
-    DbSet<Stock> Stocks { get; set; }
 
     /// <summary>
     /// Saves all changes made in this context to the database.
