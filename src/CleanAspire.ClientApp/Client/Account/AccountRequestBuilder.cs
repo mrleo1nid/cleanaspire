@@ -7,10 +7,8 @@ using CleanAspire.Api.Client.Account.Enable2fa;
 using CleanAspire.Api.Client.Account.ForgotPassword;
 using CleanAspire.Api.Client.Account.GenerateAuthenticator;
 using CleanAspire.Api.Client.Account.GenerateRecoveryCodes;
-using CleanAspire.Api.Client.Account.Google;
 using CleanAspire.Api.Client.Account.Login2fa;
 using CleanAspire.Api.Client.Account.Logout;
-using CleanAspire.Api.Client.Account.Microsoft;
 using CleanAspire.Api.Client.Account.Profile;
 using CleanAspire.Api.Client.Account.UpdateEmail;
 using Microsoft.Kiota.Abstractions.Extensions;
@@ -62,11 +60,6 @@ namespace CleanAspire.Api.Client.Account
         {
             get => new global::CleanAspire.Api.Client.Account.GenerateRecoveryCodes.GenerateRecoveryCodesRequestBuilder(PathParameters, RequestAdapter);
         }
-        /// <summary>The google property</summary>
-        public global::CleanAspire.Api.Client.Account.Google.GoogleRequestBuilder Google
-        {
-            get => new global::CleanAspire.Api.Client.Account.Google.GoogleRequestBuilder(PathParameters, RequestAdapter);
-        }
         /// <summary>The login2fa property</summary>
         public global::CleanAspire.Api.Client.Account.Login2fa.Login2faRequestBuilder Login2fa
         {
@@ -76,11 +69,6 @@ namespace CleanAspire.Api.Client.Account
         public global::CleanAspire.Api.Client.Account.Logout.LogoutRequestBuilder Logout
         {
             get => new global::CleanAspire.Api.Client.Account.Logout.LogoutRequestBuilder(PathParameters, RequestAdapter);
-        }
-        /// <summary>The microsoft property</summary>
-        public global::CleanAspire.Api.Client.Account.Microsoft.MicrosoftRequestBuilder Microsoft
-        {
-            get => new global::CleanAspire.Api.Client.Account.Microsoft.MicrosoftRequestBuilder(PathParameters, RequestAdapter);
         }
         /// <summary>The profile property</summary>
         public global::CleanAspire.Api.Client.Account.Profile.ProfileRequestBuilder Profile

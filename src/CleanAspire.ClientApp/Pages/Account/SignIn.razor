@@ -37,13 +37,6 @@
                     </div>
                 }
                 <MudButton ButtonType="ButtonType.Submit" FullWidth="true" Variant="Variant.Filled" Color="Color.Primary">@L["Sign In"]</MudButton>
-                @if (!RequiresTwoFactor){
-                    <MudButton StartIcon="@Icons.Custom.Brands.Google" ButtonType="ButtonType.Button" FullWidth="true" Variant="Variant.Outlined" OnClick="LoginWithGoogle" Color="Color.Default">@L["Login with Google"]</MudButton>
-                }
-                @if (!RequiresTwoFactor)
-                {
-                    <MudButton StartIcon="@Icons.Custom.Brands.Microsoft" ButtonType="ButtonType.Button" FullWidth="true" Variant="Variant.Outlined" OnClick="LoginWithMicrosoft" Color="Color.Default">@L["Login with Microsoft"]</MudButton>
-                }
             </div>
         </EditForm>
     </div>
@@ -102,42 +95,6 @@
         }
 
     }
-    private async Task LoginWithGoogle()
-    {
-        try
-        {
-            var result = await ApiClient.Account.Google.LoginUrl.GetAsync(x=>x.QueryParameters.State = Navigation.BaseUri);
-            if(!string.IsNullOrEmpty(result))
-            {
-                Navigation.NavigateTo(result);
-            }
-
-        }
-        catch (Exception e)
-        {
-            Logger.LogError(e, e.Message);
-            Snackbar.Add(L["Authentication failed.Please check your email and password and try again."], Severity.Error);
-        }
-    }
-
-    private async Task LoginWithMicrosoft()
-    {
-        try
-        {
-            var result = await ApiClient.Account.Microsoft.LoginUrl.GetAsync(x => x.QueryParameters.State = Navigation.BaseUri);
-            if (!string.IsNullOrEmpty(result))
-            {
-                Navigation.NavigateTo(result);
-            }
-        }
-        catch (Exception e)
-        {
-            Logger.LogError(e, e.Message);
-            Snackbar.Add(L["Authentication failed. Please check your credentials and try again."], Severity.Error);
-        }
-    }
-
-
     public class SignInModel
     {
         [Required(ErrorMessage = "Username is required.")]
