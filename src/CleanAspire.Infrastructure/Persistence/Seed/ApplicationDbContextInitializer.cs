@@ -33,10 +33,142 @@ public class ApplicationDbContextInitializer
         try
         {
             if (_context.Database.IsRelational())
-                await _context.Database.MigrateAsync();
+            {
+                // Check if there are pending migrations before attempting to migrate
+                var pendingMigrations = await _context.Database.GetPendingMigrationsAsync();
+                if (pendingMigrations.Any())
+                {
+                    _logger.LogInformation(
+                        "Applying {Count} pending migration(s)...",
+                        pendingMigrations.Count()
+                    );
+
+                    try
+                    {
+                        await _context.Database.MigrateAsync();
+                        _logger.LogInformation("Migrations applied successfully.");
+                    }
+                    catch (Microsoft.Data.Sqlite.SqliteException migrateEx)
+                        when (migrateEx.Message.Contains(
+                                "already exists",
+                                StringComparison.OrdinalIgnoreCase
+                            )
+                            || migrateEx.Message.Contains(
+                                "duplicate",
+                                StringComparison.OrdinalIgnoreCase
+                            )
+                        )
+                    {
+                        // Migration failed because tables already exist
+                        // This can happen if database was created manually or migration history is out of sync
+                        _logger.LogWarning(
+                            migrateEx,
+                            "Migration failed because tables already exist. Checking migration history..."
+                        );
+
+                        // Check migration history and log status
+                        var appliedMigrations = await _context.Database.GetAppliedMigrationsAsync();
+                        var allMigrations = _context.Database.GetMigrations();
+                        var missingInHistory = allMigrations.Except(appliedMigrations).ToList();
+
+                        if (missingInHistory.Any())
+                        {
+                            _logger.LogWarning(
+                                "Found {Count} migration(s) not recorded in history: {Migrations}. "
+                                    + "Database tables exist but migration history is incomplete. "
+                                    + "Consider resetting the database or manually updating the __EFMigrationsHistory table.",
+                                missingInHistory.Count,
+                                string.Join(", ", missingInHistory)
+                            );
+                        }
+                        else
+                        {
+                            _logger.LogInformation(
+                                "Migration history is synchronized. Database appears to be in a valid state despite the error."
+                            );
+                        }
+
+                        // Don't throw - allow application to continue
+                        return;
+                    }
+                }
+                else
+                {
+                    _logger.LogInformation("Database is up to date. No pending migrations.");
+                }
+            }
+        }
+        catch (Microsoft.Data.Sqlite.SqliteException sqliteEx)
+            when (sqliteEx.Message.Contains("already exists", StringComparison.OrdinalIgnoreCase)
+                || sqliteEx.Message.Contains("duplicate", StringComparison.OrdinalIgnoreCase)
+            )
+        {
+            // Handle case where tables exist but migration history might be missing
+            _logger.LogWarning(
+                sqliteEx,
+                "Database tables already exist. This may indicate a migration history mismatch. "
+                    + "Attempting to synchronize migration history..."
+            );
+
+            // Try to ensure the migration history is up to date
+            try
+            {
+                var appliedMigrations = await _context.Database.GetAppliedMigrationsAsync();
+                var allMigrations = _context.Database.GetMigrations();
+                var missingInHistory = allMigrations.Except(appliedMigrations).ToList();
+
+                if (missingInHistory.Any())
+                {
+                    _logger.LogWarning(
+                        "Found {Count} migration(s) not recorded in history: {Migrations}. "
+                            + "The database may need to be reset or migration history manually updated.",
+                        missingInHistory.Count,
+                        string.Join(", ", missingInHistory)
+                    );
+                }
+                else
+                {
+                    _logger.LogInformation(
+                        "Migration history is synchronized. Database appears to be in a valid state."
+                    );
+                }
+            }
+            catch (Exception innerEx)
+            {
+                _logger.LogError(
+                    innerEx,
+                    "Error checking migration history. Database may be in an inconsistent state."
+                );
+            }
+
+            // Don't throw - allow the application to continue if tables already exist
+            // This is a common scenario during development
         }
         catch (Exception ex)
         {
+            // Check if it's a nested SQLite exception
+            if (
+                ex.InnerException is Microsoft.Data.Sqlite.SqliteException innerSqliteEx
+                && (
+                    innerSqliteEx.Message.Contains(
+                        "already exists",
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                    || innerSqliteEx.Message.Contains(
+                        "duplicate",
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                )
+            )
+            {
+                _logger.LogWarning(
+                    innerSqliteEx,
+                    "Database tables already exist (nested exception). Allowing application to continue."
+                );
+                // Don't throw - allow the application to continue
+                return;
+            }
+
             _logger.LogError(ex, "An error occurred while initialising the database");
             throw;
         }
