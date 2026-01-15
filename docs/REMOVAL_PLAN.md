@@ -193,16 +193,22 @@ Stock
 **Описание:** (Опционально) Если не требуется в self-hosted версии, удалить функционал 2FA.
 
 #### Backend 2FA endpoints
-- [ ] `src/CleanAspire.Api/IdentityApiAdditionalEndpointsExtensions.cs`
+- [x] `src/CleanAspire.Api/IdentityApiAdditionalEndpointsExtensions.cs`
   - Удалить `POST /account/login2fa`
-  - Удалить `POST /account/generateAuthenticator`
+  - Удалить `GET /account/generateAuthenticator`
   - Удалить `POST /account/enable2fa`
   - Удалить `GET /account/disable2fa`
-  - Удалить `POST /account/generateRecoveryCodes`
+  - Удалить `GET /account/generateRecoveryCodes`
+  - Удалить логику 2FA из основного `/login` endpoint
+  - Удалить классы `AuthenticatorResponse`, `Enable2faRequest`, `RecoveryCodesResponse`
 
 #### Frontend 2FA компоненты
-- [ ] `src/CleanAspire.ClientApp/Pages/Account/Profile/TwofactorSetting.razor`
+- [x] `src/CleanAspire.ClientApp/Pages/Account/Profile/TwofactorSetting.razor`
   - Удалить страницу настроек 2FA
+- [x] `src/CleanAspire.ClientApp/Pages/Account/Profile/Setting.razor`
+  - Удалить вкладку Security с TwofactorSetting
+- [x] `src/CleanAspire.ClientApp/Pages/Account/SignIn.razor`
+  - Удалить логику RequiresTwoFactor и TwoFactorCode
 
 ---
 
@@ -841,11 +847,13 @@ Stock
 **Commit:** `git commit -m "feat: remove OAuth authentication (Google & Microsoft)"`
 
 **2.3 2FA (опционально)**
-- [ ] Удалить Backend 2FA endpoints
-- [ ] Удалить Frontend TwofactorSetting.razor
-- [ ] Удалить Generated API clients для 2FA
+- [x] Удалить Backend 2FA endpoints
+- [x] Удалить Frontend TwofactorSetting.razor
+- [x] Удалить Generated API clients для 2FA
+- [x] Удалить логику 2FA из основного login endpoint
+- [x] Удалить логику 2FA из SignIn.razor
 
-**Commit:** `git commit -m "feat: remove 2FA functionality"`
+**Commit:** `git commit -m "feat: remove 2FA functionality"` ✅
 
 **2.4 Очистка ApplicationUser**
 - [ ] Удалить поле Provider

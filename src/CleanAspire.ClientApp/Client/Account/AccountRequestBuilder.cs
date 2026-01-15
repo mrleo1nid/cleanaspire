@@ -2,12 +2,7 @@
 #pragma warning disable CS0618
 using CleanAspire.Api.Client.Account.ConfirmEmail;
 using CleanAspire.Api.Client.Account.DeleteOwnerAccount;
-using CleanAspire.Api.Client.Account.Disable2fa;
-using CleanAspire.Api.Client.Account.Enable2fa;
 using CleanAspire.Api.Client.Account.ForgotPassword;
-using CleanAspire.Api.Client.Account.GenerateAuthenticator;
-using CleanAspire.Api.Client.Account.GenerateRecoveryCodes;
-using CleanAspire.Api.Client.Account.Login2fa;
 using CleanAspire.Api.Client.Account.Logout;
 using CleanAspire.Api.Client.Account.Profile;
 using CleanAspire.Api.Client.Account.UpdateEmail;
@@ -35,35 +30,10 @@ namespace CleanAspire.Api.Client.Account
         {
             get => new global::CleanAspire.Api.Client.Account.DeleteOwnerAccount.DeleteOwnerAccountRequestBuilder(PathParameters, RequestAdapter);
         }
-        /// <summary>The disable2fa property</summary>
-        public global::CleanAspire.Api.Client.Account.Disable2fa.Disable2faRequestBuilder Disable2fa
-        {
-            get => new global::CleanAspire.Api.Client.Account.Disable2fa.Disable2faRequestBuilder(PathParameters, RequestAdapter);
-        }
-        /// <summary>The enable2fa property</summary>
-        public global::CleanAspire.Api.Client.Account.Enable2fa.Enable2faRequestBuilder Enable2fa
-        {
-            get => new global::CleanAspire.Api.Client.Account.Enable2fa.Enable2faRequestBuilder(PathParameters, RequestAdapter);
-        }
         /// <summary>The forgotPassword property</summary>
         public global::CleanAspire.Api.Client.Account.ForgotPassword.ForgotPasswordRequestBuilder ForgotPassword
         {
             get => new global::CleanAspire.Api.Client.Account.ForgotPassword.ForgotPasswordRequestBuilder(PathParameters, RequestAdapter);
-        }
-        /// <summary>The generateAuthenticator property</summary>
-        public global::CleanAspire.Api.Client.Account.GenerateAuthenticator.GenerateAuthenticatorRequestBuilder GenerateAuthenticator
-        {
-            get => new global::CleanAspire.Api.Client.Account.GenerateAuthenticator.GenerateAuthenticatorRequestBuilder(PathParameters, RequestAdapter);
-        }
-        /// <summary>The generateRecoveryCodes property</summary>
-        public global::CleanAspire.Api.Client.Account.GenerateRecoveryCodes.GenerateRecoveryCodesRequestBuilder GenerateRecoveryCodes
-        {
-            get => new global::CleanAspire.Api.Client.Account.GenerateRecoveryCodes.GenerateRecoveryCodesRequestBuilder(PathParameters, RequestAdapter);
-        }
-        /// <summary>The login2fa property</summary>
-        public global::CleanAspire.Api.Client.Account.Login2fa.Login2faRequestBuilder Login2fa
-        {
-            get => new global::CleanAspire.Api.Client.Account.Login2fa.Login2faRequestBuilder(PathParameters, RequestAdapter);
         }
         /// <summary>The logout property</summary>
         public global::CleanAspire.Api.Client.Account.Logout.LogoutRequestBuilder Logout

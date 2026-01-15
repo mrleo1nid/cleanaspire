@@ -305,159 +305,8 @@ public static class IdentityApiAdditionalEndpointsExtensions
             });
 
         routeGroup
-            .MapGet(
-                "/generateAuthenticator",
-                async Task<Results<Ok<AuthenticatorResponse>, ValidationProblem, NotFound>> (
-                    ClaimsPrincipal claimsPrincipal,
-                    HttpContext context,
-                    [FromQuery] string appName
-                ) =>
-                {
-                    var userManager = context.RequestServices.GetRequiredService<
-                        UserManager<TUser>
-                    >();
-                    var urlEncoder = context.RequestServices.GetRequiredService<UrlEncoder>();
-                    if (await userManager.GetUserAsync(claimsPrincipal) is not { } user)
-                    {
-                        return TypedResults.NotFound();
-                    }
-                    if (string.IsNullOrEmpty(appName))
-                        appName = "Blazor Aspire";
-                    var unformattedKey = await userManager.GetAuthenticatorKeyAsync(user);
-                    if (string.IsNullOrEmpty(unformattedKey))
-                    {
-                        await userManager.ResetAuthenticatorKeyAsync(user);
-                        unformattedKey = await userManager.GetAuthenticatorKeyAsync(user);
-                    }
-                    var sharedKey = FormatKey(unformattedKey!);
-
-                    var email = await userManager.GetEmailAsync(user);
-                    var authenticatorUri = string.Format(
-                        CultureInfo.InvariantCulture,
-                        AuthenticatorUriFormat,
-                        urlEncoder.Encode(appName),
-                        urlEncoder.Encode(email!),
-                        unformattedKey
-                    );
-                    return TypedResults.Ok(new AuthenticatorResponse(sharedKey, authenticatorUri));
-                }
-            )
-            .RequireAuthorization()
-            .Produces<AuthenticatorResponse>(StatusCodes.Status200OK)
-            .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status500InternalServerError)
-            .WithSummary("Generate an Authenticator URI and shared key")
-            .WithDescription(
-                "Generates a shared key and an Authenticator URI for a logged-in user. This endpoint is typically used to configure a TOTP authenticator app, such as Microsoft Authenticator or Google Authenticator."
-            );
-
-        routeGroup
             .MapPost(
-                "/enable2fa",
-                async Task<Results<Ok, ValidationProblem, NotFound, BadRequest>> (
-                    ClaimsPrincipal claimsPrincipal,
-                    HttpContext context,
-                    [FromBody] Enable2faRequest request
-                ) =>
-                {
-                    var userManager = context.RequestServices.GetRequiredService<
-                        UserManager<TUser>
-                    >();
-                    var urlEncoder = context.RequestServices.GetRequiredService<UrlEncoder>();
-                    var user = await userManager.GetUserAsync(claimsPrincipal);
-                    if (user is null)
-                    {
-                        return TypedResults.NotFound();
-                    }
-                    var unformattedKey = await userManager.GetAuthenticatorKeyAsync(user);
-                    if (string.IsNullOrEmpty(unformattedKey))
-                    {
-                        await userManager.ResetAuthenticatorKeyAsync(user);
-                        unformattedKey = await userManager.GetAuthenticatorKeyAsync(user);
-                    }
-                    var sharedKey = FormatKey(unformattedKey!);
-                    var email = await userManager.GetEmailAsync(user);
-                    var authenticatorUri = string.Format(
-                        CultureInfo.InvariantCulture,
-                        AuthenticatorUriFormat,
-                        urlEncoder.Encode(request.AppName ?? "Blazor Aspire"), // 使用用户提供的 appName 或默认值
-                        urlEncoder.Encode(email!),
-                        unformattedKey
-                    );
-
-                    var isValid = await userManager.VerifyTwoFactorTokenAsync(
-                        user,
-                        userManager.Options.Tokens.AuthenticatorTokenProvider,
-                        request.VerificationCode
-                    );
-                    if (isValid)
-                    {
-                        await userManager.SetTwoFactorEnabledAsync(user, true);
-                        logger.LogInformation("User has enabled 2fa.");
-                        return TypedResults.Ok();
-                    }
-                    else
-                    {
-                        return TypedResults.BadRequest();
-                    }
-                }
-            )
-            .RequireAuthorization()
-            .Produces(StatusCodes.Status200OK)
-            .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .WithSummary("Enable Authenticator for the user")
-            .WithDescription(
-                "This endpoint enables Two-Factor Authentication (TOTP) for a logged-in user. The user must first scan the provided QR code using an authenticator app, and then verify the generated code to complete the process."
-            );
-
-        routeGroup
-            .MapGet(
-                "/disable2fa",
-                async Task<Results<Ok, NotFound, BadRequest>> (
-                    ClaimsPrincipal claimsPrincipal,
-                    HttpContext context
-                ) =>
-                {
-                    var userManager = context.RequestServices.GetRequiredService<
-                        UserManager<TUser>
-                    >();
-                    var logger = context
-                        .RequestServices.GetRequiredService<ILoggerFactory>()
-                        .CreateLogger("Disable2FA");
-                    var user = await userManager.GetUserAsync(claimsPrincipal);
-                    if (user is null)
-                    {
-                        return TypedResults.NotFound();
-                    }
-                    var isTwoFactorEnabled = await userManager.GetTwoFactorEnabledAsync(user);
-                    if (!isTwoFactorEnabled)
-                    {
-                        return TypedResults.BadRequest();
-                    }
-                    var result = await userManager.SetTwoFactorEnabledAsync(user, false);
-                    if (!result.Succeeded)
-                    {
-                        logger.LogError("Failed to disable 2FA");
-                        return TypedResults.BadRequest();
-                    }
-
-                    logger.LogInformation("User has disabled 2FA.");
-                    return TypedResults.Ok();
-                }
-            )
-            .RequireAuthorization()
-            .Produces(StatusCodes.Status200OK)
-            .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .WithSummary("Disable Two-Factor Authentication for the user")
-            .WithDescription(
-                "This endpoint disables Two-Factor Authentication (TOTP) for a logged-in user. The user must already have 2FA enabled for this operation to be valid."
-            );
-
-        routeGroup
-            .MapPost(
-                "/login2fa",
+                "/login",
                 async Task<Results<Ok, ProblemHttpResult, NotFound>> (
                     [FromBody] LoginRequest login,
                     [FromQuery] bool? useCookies,
@@ -490,24 +339,6 @@ public static class IdentityApiAdditionalEndpointsExtensions
                         lockoutOnFailure: true
                     );
 
-                    if (result.RequiresTwoFactor)
-                    {
-                        if (!string.IsNullOrEmpty(login.TwoFactorCode))
-                        {
-                            result = await signInManager.TwoFactorAuthenticatorSignInAsync(
-                                login.TwoFactorCode,
-                                isPersistent,
-                                rememberClient: isPersistent
-                            );
-                        }
-                        else if (!string.IsNullOrEmpty(login.TwoFactorRecoveryCode))
-                        {
-                            result = await signInManager.TwoFactorRecoveryCodeSignInAsync(
-                                login.TwoFactorRecoveryCode
-                            );
-                        }
-                    }
-
                     if (!result.Succeeded)
                     {
                         return TypedResults.Problem(
@@ -525,55 +356,9 @@ public static class IdentityApiAdditionalEndpointsExtensions
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .WithSummary("Login with optional two-factor authentication")
+            .WithSummary("Login with email and password")
             .WithDescription(
-                "This endpoint allows users to log in with their email and password. If two-factor authentication is enabled, the user must provide a valid two-factor code or recovery code. Supports persistent cookies or bearer tokens."
-            );
-
-        routeGroup
-            .MapGet(
-                "generateRecoveryCodes",
-                async Task<Results<Ok<RecoveryCodesResponse>, NotFound, BadRequest>> (
-                    ClaimsPrincipal claimsPrincipal,
-                    HttpContext context
-                ) =>
-                {
-                    var userManager = context.RequestServices.GetRequiredService<
-                        UserManager<TUser>
-                    >();
-                    var logger = context
-                        .RequestServices.GetRequiredService<ILoggerFactory>()
-                        .CreateLogger("Disable2FA");
-                    var user = await userManager.GetUserAsync(claimsPrincipal);
-                    if (user is null)
-                    {
-                        return TypedResults.NotFound();
-                    }
-                    var isTwoFactorEnabled = await userManager.GetTwoFactorEnabledAsync(user);
-                    if (!isTwoFactorEnabled)
-                    {
-                        return TypedResults.BadRequest();
-                    }
-                    int codeCount = 8;
-                    var recoveryCodes = await userManager.GenerateNewTwoFactorRecoveryCodesAsync(
-                        user,
-                        codeCount
-                    );
-                    if (recoveryCodes is null)
-                    {
-                        return TypedResults.BadRequest();
-                    }
-                    return TypedResults.Ok(new RecoveryCodesResponse(recoveryCodes!));
-                }
-            )
-            .RequireAuthorization()
-            .Produces<RecoveryCodesResponse>(StatusCodes.Status201Created)
-            .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .WithSummary("Generate recovery codes for two-factor authentication.")
-            .WithDescription(
-                "Generates new recovery codes if two-factor authentication is enabled. "
-                    + "Returns 404 if the user is not found or 400 if 2FA is not enabled."
+                "This endpoint allows users to log in with their email and password. Supports persistent cookies or bearer tokens."
             );
 
         async Task SendConfirmationEmailAsync(
@@ -666,7 +451,6 @@ public static class IdentityApiAdditionalEndpointsExtensions
             throw new InvalidCastException(
                 $"The provided user must be of type {nameof(ApplicationUser)}."
             );
-        var isTwoFactorEnabled = await userManager.GetTwoFactorEnabledAsync(user);
         return new()
         {
             UserId =
@@ -686,7 +470,7 @@ public static class IdentityApiAdditionalEndpointsExtensions
             SuperiorId = appUser.SuperiorId,
             TimeZoneId = appUser.TimeZoneId,
             AvatarUrl = appUser.AvatarUrl,
-            IsTwoFactorEnabled = isTwoFactorEnabled,
+            IsTwoFactorEnabled = false,
         };
     }
 
@@ -965,9 +749,3 @@ internal sealed record MicrosoftUserInfo
     public string? jobTitle { get; set; }
     public string? officeLocation { get; set; }
 }
-
-internal sealed record AuthenticatorResponse(string SharedKey, string AuthenticatorUri);
-
-internal sealed record Enable2faRequest(string? AppName, string VerificationCode);
-
-internal sealed record RecoveryCodesResponse(IEnumerable<string> Codes);

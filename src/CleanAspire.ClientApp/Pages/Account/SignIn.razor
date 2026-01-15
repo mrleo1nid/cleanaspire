@@ -13,29 +13,18 @@
         <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
             <DataAnnotationsValidator />
             <div class="d-flex flex-column gap-2">
-                @if (RequiresTwoFactor)
-                {
-                    <MudText>Your login is protected with an authenticator app. Enter your authenticator code below.</MudText>
-                    <MudTextField @bind-Value="model.TwoFactorCode" For="@(() => model.TwoFactorCode)"
-                    Label="@L["Authenticator code"]" Placeholder="@L[""]"
-                    Required="true" RequiredError="@L["Authenticator code is required"]">
-                    </MudTextField>
-                }
-                else
-                {
-                    <MudTextField @bind-Value="model.Username" For="@(() => model.Username)"
-                    Label="@L["User name"]" Placeholder="@L["User name"]"
-                    Required="true" RequiredError="@L["user name is required"]">
-                    </MudTextField>
-                    <PasswordInput Field="@(() => model.Password)" @bind-Value="@model.Password" Label="@L["Password"]" Placeholder="@L["Password"]" RequiredError="@L["Password is required"]" />
-                    <div class="d-flex flex-row align-center justify-space-between">
-                        <!-- Remember me -->
-                        <MudCheckBox T="bool" @bind-Value="model.RememberMe" Color="Color.Default">
-                            @L["Remember me"]
-                        </MudCheckBox>
-                        <MudLink Href="/account/forgetpassword">@L["Forget password?"]</MudLink>
-                    </div>
-                }
+                <MudTextField @bind-Value="model.Username" For="@(() => model.Username)"
+                Label="@L["User name"]" Placeholder="@L["User name"]"
+                Required="true" RequiredError="@L["user name is required"]">
+                </MudTextField>
+                <PasswordInput Field="@(() => model.Password)" @bind-Value="@model.Password" Label="@L["Password"]" Placeholder="@L["Password"]" RequiredError="@L["Password is required"]" />
+                <div class="d-flex flex-row align-center justify-space-between">
+                    <!-- Remember me -->
+                    <MudCheckBox T="bool" @bind-Value="model.RememberMe" Color="Color.Default">
+                        @L["Remember me"]
+                    </MudCheckBox>
+                    <MudLink Href="/account/forgetpassword">@L["Forget password?"]</MudLink>
+                </div>
                 <MudButton ButtonType="ButtonType.Submit" FullWidth="true" Variant="Variant.Filled" Color="Color.Primary">@L["Sign In"]</MudButton>
             </div>
         </EditForm>
@@ -52,29 +41,18 @@
             Password = "P@ssw0rd!"
         };
 
-  
-    private bool RequiresTwoFactor = false;
-
     private async Task OnValidSubmit(EditContext context)
     {
         try
         {
-            await SignInManagement.LoginAsync(new Api.Client.Models.LoginRequest() { Email = model.Username, Password = model.Password, TwoFactorCode = model.TwoFactorCode }, model.RememberMe);
+            await SignInManagement.LoginAsync(new Api.Client.Models.LoginRequest() { Email = model.Username, Password = model.Password }, model.RememberMe);
             StateHasChanged();
         }
         catch (ProblemDetails e)
         {
-            if (e.Detail == "RequiresTwoFactor")
-            {
-                RequiresTwoFactor = true;
-            }
-            else if (e.Detail == "NotAllowed")
+            if (e.Detail == "NotAllowed")
             {
                 Snackbar.Add(L["Your account is not activated. Please check your email for the activation link or contact support."], Severity.Error);
-            }
-            else if (RequiresTwoFactor && e.Detail == "Failed")
-            {
-                Snackbar.Add(L["Invalid verification code."], Severity.Error);
             }
             else
             {
@@ -107,7 +85,5 @@
 
         [Display(Name = "Remember Me")]
         public bool RememberMe { get; set; } = true;
-        [MaxLength(6)]
-        public string TwoFactorCode { get; set; } = string.Empty;
     }
 }

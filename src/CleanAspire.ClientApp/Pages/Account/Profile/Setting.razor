@@ -1,4 +1,4 @@
-﻿@page "/profile/setting"
+@page "/profile/setting"
 
 <PageTitle>@L["Setting"]</PageTitle>
 <MudText Typo="Typo.h2">@L["Settings"]</MudText>
@@ -12,9 +12,6 @@
     </MudTabPanel>
     <MudTabPanel Text="@L["Offline Mode"]">
         <OfflineModeSetting></OfflineModeSetting>
-    </MudTabPanel>
-    <MudTabPanel Text="@L["Security"]">
-      <TwofactorSetting></TwofactorSetting>
     </MudTabPanel>
 </MudTabs>
 @code {
