@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -46,7 +46,10 @@ public class StocksWithPaginationQueryHandler
                         && (
                             x.Product.Name.Contains(request.Keywords)
                             || x.Product.SKU.Contains(request.Keywords)
-                            || x.Product.Description.Contains(request.Keywords)
+                            || (
+                                x.Product.Description != null
+                                && x.Product.Description.Contains(request.Keywords)
+                            )
                         )
                     ),
                 pageNumber: request.PageNumber,
@@ -54,16 +57,16 @@ public class StocksWithPaginationQueryHandler
                 mapperFunc: t => new StockDto
                 {
                     Id = t.Id,
-                    ProductId = t.ProductId,
+                    ProductId = t.ProductId ?? string.Empty,
                     Product = new ProductDto
                     {
                         Category = t.Product?.Category ?? ProductCategory.Electronics,
                         Currency = t.Product?.Currency,
                         Description = t.Product?.Description,
-                        Id = t.Product?.Id,
-                        Name = t.Product?.Name,
+                        Id = t.Product?.Id ?? string.Empty,
+                        Name = t.Product?.Name ?? string.Empty,
                         Price = t.Product?.Price ?? 0,
-                        SKU = t.Product?.SKU,
+                        SKU = t.Product?.SKU ?? string.Empty,
                         UOM = t.Product?.UOM,
                     },
                     Quantity = t.Quantity,
