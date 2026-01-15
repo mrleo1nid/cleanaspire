@@ -15,7 +15,7 @@ namespace CleanAspire.Migrators.SQLite.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.0");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.2");
 
             modelBuilder.Entity("CleanAspire.Domain.Entities.AuditTrail", b =>
                 {
@@ -567,7 +567,9 @@ namespace CleanAspire.Migrators.SQLite.Migrations
 
                             b1.ToTable("AspNetUserPasskeys");
 
-                            b1.ToJson("Data");
+                            b1
+                                .ToJson("Data")
+                                .HasColumnType("TEXT");
 
                             b1.WithOwner()
                                 .HasForeignKey("IdentityUserPasskeyCredentialId");

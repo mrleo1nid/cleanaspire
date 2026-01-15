@@ -253,8 +253,21 @@ networks:
    ```
 
 5. **Create Migration:**
+   
+   **Option 1: Create migrations for all database providers at once (Recommended)**
+   - Use the provided PowerShell script to create migrations for all providers simultaneously:
+     ```powershell
+     .\scripts\Add-Migration-All.ps1 -MigrationName "YourMigrationName"
+     ```
+   - This will create migrations for PostgreSQL and SQLite in one command.
+   - You can optionally specify a different startup project:
+     ```powershell
+     .\scripts\Add-Migration-All.ps1 -MigrationName "YourMigrationName" -StartupProject "src\CleanAspire.AppHost\CleanAspire.AppHost.csproj"
+     ```
+
+   **Option 2: Create migration for a single provider**
    - Ensure that the correct startup project is selected. It is crucial to have either `CleanAspire.AppHost` or `CleanAspire.Api` set as the startup project.
-   - Open the **Package Manager Console** in Visual Studio and set the default project to the one that matches your database configuration in `appsettings.json` (e.g., `Migrators.SQLite`, `Migrators.PostgreSQL`, or `Migrators.MSSQL`).
+   - Open the **Package Manager Console** in Visual Studio and set the default project to the one that matches your database configuration in `appsettings.json` (e.g., `Migrators.SQLite` or `Migrators.PostgreSQL`).
 
      - In **Package Manager Console**:
      ```powershell
@@ -263,6 +276,17 @@ networks:
      ```
 
    - These commands will create the migration for the new `Product` entity and update the database accordingly.
+
+6. **Remove All Migrations:**
+   - To remove all migrations from all database provider projects, use the provided PowerShell script:
+     ```powershell
+     .\scripts\Remove-Migrations-All.ps1
+     ```
+   - The script will prompt for confirmation before removing files. To skip confirmation (useful for automation):
+     ```powershell
+     .\scripts\Remove-Migrations-All.ps1 -Confirm
+     ```
+   - This will remove all migration files from PostgreSQL and SQLite projects, allowing you to start fresh with new migrations.
 
 
 
@@ -293,8 +317,6 @@ CleanAspire/
 │   │   └── CleanAspire.ServiceDefaults.csproj
 │
 ├── src/Migrators/
-│   ├── Migrators.MSSQL/                # SQL Server Migration Scripts
-│   │   └── Migrators.MSSQL.csproj
 │   ├── Migrators.PostgreSQL/           # PostgreSQL Migration Scripts
 │   │   └── Migrators.PostgreSQL.csproj
 │   ├── Migrators.SQLite/               # SQLite Migration Scripts
