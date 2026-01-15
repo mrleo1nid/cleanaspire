@@ -937,7 +937,7 @@ Stock
 - [ ] Domain Entity
 - [ ] Создать и применить Database Migration
 
-**Commit:** `git commit -m "feat: remove Product entity and related functionality"`
+**Commit:** `git commit -m "feat: remove Product entity and related functionality"` ✅
 
 **Проверка:**
 - [ ] Компиляция проекта
