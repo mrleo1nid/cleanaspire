@@ -1,22 +1,23 @@
 ﻿var builder = DistributedApplication.CreateBuilder(args);
 
 // PostgreSQL database for the application
-var postgresServer = builder
+var postgresDatabase = builder
     .AddPostgres("postgresserver")
-    .WithPgAdmin()
-    .WithDataVolume()
-    .WithImage("postgres", "16"); // Use PostgreSQL 16
-
-var postgresDatabase = postgresServer.AddDatabase("postgresdb");
+    .WithPgAdmin(config => config.WithVolume("/var/lib/pgadmin/BitDashboardTemplate/data"))
+    .WithImage("pgvector/pgvector", "pg18") // pgvector supports embedded vector search.
+    .AddDatabase("postgresdb");
 
 var apiService = builder
     .AddProject<Projects.CleanAspire_Api>("apiservice")
     .WithReference(postgresDatabase)
     // Configure database settings to use PostgreSQL
     // WithReference automatically creates ConnectionStrings:postgresdb variable
-    // Map it to DatabaseSettings__ConnectionString for the application
+    // Map it to DatabaseSettings__ConnectionString using the reference expression
     .WithEnvironment("DatabaseSettings__DBProvider", "postgresql")
-    .WithEnvironment("DatabaseSettings__ConnectionString", postgresDatabase.GetConnectionString())
+    .WithEnvironment(
+        "DatabaseSettings__ConnectionString",
+        postgresDatabase.Resource.ConnectionStringExpression
+    )
     .WaitFor(postgresDatabase);
 
 builder
