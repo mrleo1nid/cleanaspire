@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -26,22 +26,22 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// <summary>
     /// Gets or sets the Tenants DbSet.
     /// </summary>
-    public DbSet<Tenant> Tenants { get; set; }
+    public DbSet<Tenant> Tenants { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the AuditTrails DbSet.
     /// </summary>
-    public DbSet<AuditTrail> AuditTrails { get; set; }
+    public DbSet<AuditTrail> AuditTrails { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the Products DbSet.
     /// </summary>
-    public DbSet<Product> Products { get; set; }
+    public DbSet<Product> Products { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the Stocks DbSet.
     /// </summary>
-    public DbSet<Stock> Stocks { get; set; }
+    public DbSet<Stock> Stocks { get; set; } = null!;
 
     /// <summary>
     /// Configures the schema needed for the identity framework.

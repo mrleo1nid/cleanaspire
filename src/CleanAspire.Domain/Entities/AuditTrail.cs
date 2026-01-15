@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -10,7 +10,7 @@ namespace CleanAspire.Domain.Entities;
 
 public class AuditTrail : IEntity<string>
 {
-    public string Id { get; set; }
+    public string Id { get; set; } = Guid.CreateVersion7().ToString();
     public string? UserId { get; set; }
     public virtual ApplicationUser? Owner { get; set; }
     public AuditType AuditType { get; set; }

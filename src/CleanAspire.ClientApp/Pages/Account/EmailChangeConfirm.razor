@@ -1,4 +1,4 @@
-﻿@page "/account/confirm-email-change"
+@page "/account/confirm-email-change"
 @using System.ComponentModel.DataAnnotations
 @using System.Text.Json
 <PageTitle>@L["Change email confirm"]</PageTitle>
@@ -56,7 +56,7 @@
      
     
 
-    private async Task OnValidSubmit(EditContext context)
+    private void OnValidSubmit(EditContext context)
     {
         try
         {

@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <RootNamespace>CleanAspire.Api</RootNamespace>
         <AssemblyName>CleanAspire.Api</AssemblyName>
+        <NoWarn>$(NoWarn);CS8784</NoWarn>
     </PropertyGroup>
     <PropertyGroup>
         <OpenApiDocumentsDirectory>$(MSBuildProjectDirectory)</OpenApiDocumentsDirectory>

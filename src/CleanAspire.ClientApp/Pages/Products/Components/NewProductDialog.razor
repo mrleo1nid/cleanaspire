@@ -1,4 +1,4 @@
-﻿@using CleanAspire.ClientApp.Components.Autocompletes
+@using CleanAspire.ClientApp.Components.Autocompletes
 @using CleanAspire.ClientApp.Services.Products
 @using static CleanAspire.Api.Client.Models.CreateProductCommand
 
@@ -74,7 +74,7 @@
 
             var result = await ProductServiceProxy.CreateProductAsync(model);
             result.Switch(
-               async ok =>
+               ok =>
                 {
                     Snackbar.Add(L["Product created successfully!"], Severity.Success);
                     MudDialog.Close(DialogResult.Ok(true));

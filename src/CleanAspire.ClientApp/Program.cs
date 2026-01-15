@@ -15,7 +15,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 // register the cookie handler
 builder.Services.AddCoreServices(builder.Configuration);
-builder.Services.AddHttpClients(builder.Configuration);
+builder.Services.AddHttpClients();
 builder.Services.AddAuthenticationAndLocalization(builder.Configuration);
 var app = builder.Build();
 

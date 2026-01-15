@@ -28,7 +28,7 @@ namespace CleanAspire.ClientApp;
 
 public static class DependencyInjection
 {
-    public static void TryAddMudBlazor(this IServiceCollection services, IConfiguration config)
+    public static void TryAddMudBlazor(this IServiceCollection services)
     {
         #region register MudBlazor.Services
         services.AddMudServices(config =>
@@ -78,13 +78,10 @@ public static class DependencyInjection
         services.AddSingleton(clientAppSettings!);
 
         // MudBlazor Integration
-        services.TryAddMudBlazor(configuration);
+        services.TryAddMudBlazor();
     }
 
-    public static void AddHttpClients(
-        this IServiceCollection services,
-        IConfiguration configuration
-    )
+    public static void AddHttpClients(this IServiceCollection services)
     {
         // HttpClient Registration
         services
