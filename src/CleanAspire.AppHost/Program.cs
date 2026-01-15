@@ -14,6 +14,11 @@ var postgresDatabase = builder
 // Redis cache for distributed caching
 var redisCache = builder.AddRedis("rediscache");
 
+// Blazor WebAssembly Standalone project - declare first to get endpoint reference
+var clientWebWasmProject = builder
+    .AddProject<Projects.CleanAspire_ClientAppHost>("blazorwasm")
+    .WithExternalHttpEndpoints();
+
 var apiService = builder
     .AddProject<Projects.CleanAspire_Api>("apiservice")
     .WithReference(postgresDatabase)
@@ -29,6 +34,13 @@ var apiService = builder
     // Configure Redis settings
     .WithEnvironment("Redis__Enabled", "true")
     .WithEnvironment("Redis__ConnectionString", redisCache.Resource.ConnectionStringExpression)
+    // Add WASM client origin to allowed CORS origins
+    .WithEnvironment(
+        "AllowedCorsOrigins",
+        ReferenceExpression.Create(
+            $"https://localhost:7341,https://localhost:7123,{clientWebWasmProject.GetEndpoint("https")}"
+        )
+    )
     .WaitFor(postgresDatabase)
     .WaitFor(redisCache);
 
@@ -39,16 +51,10 @@ builder
     .WithExplicitStart() // Requires manual start from Aspire Dashboard
     .WaitFor(apiService);
 
-// Blazor WebAssembly Standalone project.
-// This project runs as a standalone WASM application that connects to the API server.
-var clientWebWasmProject = builder
-    .AddProject<Projects.CleanAspire_ClientAppHost>("blazorwasm")
-    .WithExternalHttpEndpoints()
+// Configure WASM client to point to API and wait for it to be ready
+clientWebWasmProject
     .WithReference(apiService)
-    // Configure ServiceBaseUrl environment variable to point to the API server
-    // This will override the default ServiceBaseUrl from appsettings.json
     .WithEnvironment("ClientAppSettings__ServiceBaseUrl", apiService.GetEndpoint("http"))
-    .WithExplicitStart() // Requires manual start from Aspire Dashboard
     .WaitFor(apiService);
 
 // Adding health checks endpoints to applications in non-development environments has security implications.
