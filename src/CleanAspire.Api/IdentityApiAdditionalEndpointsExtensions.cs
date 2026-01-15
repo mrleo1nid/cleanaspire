@@ -205,51 +205,6 @@ public static class IdentityApiAdditionalEndpointsExtensions
             );
 
         routeGroup
-            .MapPost(
-                "/signup",
-                async Task<Results<Created, ValidationProblem>> (
-                    [FromBody] SignupRequest request,
-                    HttpContext context
-                ) =>
-                {
-                    var userManager = context.RequestServices.GetRequiredService<
-                        UserManager<TUser>
-                    >();
-                    var user = new TUser();
-                    if (!userManager.SupportsUserEmail)
-                    {
-                        throw new NotSupportedException(
-                            $"{nameof(MapIdentityApiAdditionalEndpoints)} requires a user store with email support."
-                        );
-                    }
-                    if (user is not ApplicationUser appUser)
-                        throw new InvalidCastException(
-                            $"The provided user must be of type {nameof(ApplicationUser)}."
-                        );
-                    appUser.Email = request.Email;
-                    appUser.UserName = request.Email;
-                    appUser.Nickname = request.Nickname;
-                    appUser.Provider = request.Provider;
-                    appUser.TenantId = request.TenantId;
-                    appUser.TimeZoneId = request.TimeZoneId;
-                    appUser.LanguageCode = request.LanguageCode;
-                    var result = await userManager.CreateAsync(user, request.Password);
-                    if (!result.Succeeded)
-                    {
-                        return CreateValidationProblem(result);
-                    }
-                    logger.LogInformation("User signup successful.");
-                    await SendConfirmationEmailAsync(user, userManager, context, request.Email);
-                    return TypedResults.Created();
-                }
-            )
-            .AllowAnonymous()
-            .WithSummary("User Signup")
-            .WithDescription(
-                "Allows a new user to sign up by providing required details such as email, password, and tenant-specific information. This endpoint creates a new user account and sends a confirmation email for verification."
-            );
-
-        routeGroup
             .MapDelete(
                 "/deleteOwnerAccount",
                 async Task<Results<Ok, ValidationProblem, NotFound>> (
@@ -319,17 +274,15 @@ public static class IdentityApiAdditionalEndpointsExtensions
                         return TypedResults.Unauthorized();
                     }
                     IdentityResult result;
+                    // Only process email change, not email confirmation for registration
                     if (string.IsNullOrEmpty(changedEmail))
                     {
-                        result = await userManager.ConfirmEmailAsync(user, code);
+                        return TypedResults.Unauthorized();
                     }
-                    else
+                    result = await userManager.ChangeEmailAsync(user, changedEmail, code);
+                    if (result.Succeeded)
                     {
-                        result = await userManager.ChangeEmailAsync(user, changedEmail, code);
-                        if (result.Succeeded)
-                        {
-                            result = await userManager.SetUserNameAsync(user, changedEmail);
-                        }
+                        result = await userManager.SetUserNameAsync(user, changedEmail);
                     }
                     if (!result.Succeeded)
                     {
@@ -339,9 +292,9 @@ public static class IdentityApiAdditionalEndpointsExtensions
                 }
             )
             .AllowAnonymous()
-            .WithSummary("Confirm Email or Update Email Address")
+            .WithSummary("Update Email Address")
             .WithDescription(
-                "Processes email confirmation or email change requests for a user. It validates the confirmation code, verifies the user ID, and updates the email if a new one is provided. Returns a success message upon successful confirmation or email update."
+                "Processes email change requests for a user. It validates the confirmation code, verifies the user ID, and updates the email. Returns a success message upon successful email update."
             )
             .Add(endpointBuilder =>
             {
@@ -1495,49 +1448,6 @@ public sealed class ProfileResponse
     public string? LanguageCode { get; init; }
     public string? SuperiorId { get; init; }
     public bool IsTwoFactorEnabled { get; init; }
-}
-
-public sealed class SignupRequest
-{
-    [Required]
-    [Description("User's email address. Must be in a valid email format.")]
-    [MaxLength(80, ErrorMessage = "Email cannot exceed 80 characters.")]
-    [RegularExpression(
-        "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
-        ErrorMessage = "Invalid email format."
-    )]
-    public required string Email { get; init; }
-
-    [Required]
-    [Description("User's password. Must meet the security criteria.")]
-    [MinLength(8, ErrorMessage = "Password must be at least 8 characters long.")]
-    [MaxLength(20, ErrorMessage = "Password cannot exceed 20 characters.")]
-    [RegularExpression(
-        "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,50}$",
-        ErrorMessage = "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character."
-    )]
-    public required string Password { get; init; }
-
-    [Description("User's preferred nickname.")]
-    [MaxLength(50, ErrorMessage = "Nickname cannot exceed 50 characters.")]
-    public string? Nickname { get; set; }
-
-    [Description("Authentication provider, e.g., Local or Google.")]
-    [MaxLength(20, ErrorMessage = "Provider cannot exceed 20 characters.")]
-    public string? Provider { get; set; } = "Local";
-
-    [Description("Tenant identifier for multi-tenant systems. Must be a GUID in version 7 format.")]
-    [MaxLength(50, ErrorMessage = "Nickname cannot exceed 50 characters.")]
-    public string? TenantId { get; set; }
-
-    [Description("User's time zone identifier, e.g., 'UTC', 'America/New_York'.")]
-    [MaxLength(50, ErrorMessage = "TimeZoneId cannot exceed 50 characters.")]
-    public string? TimeZoneId { get; set; }
-
-    [Description("User's preferred language code, e.g., 'en-US'.")]
-    [MaxLength(10, ErrorMessage = "LanguageCode cannot exceed 10 characters.")]
-    [RegularExpression("^[a-z]{2,3}(-[A-Z]{2})?$", ErrorMessage = "Invalid language code format.")]
-    public string? LanguageCode { get; set; }
 }
 
 internal sealed record GoogleTokenResponse

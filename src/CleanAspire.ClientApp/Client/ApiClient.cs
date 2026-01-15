@@ -8,7 +8,6 @@ using CleanAspire.Api.Client.Login;
 using CleanAspire.Api.Client.Manage;
 using CleanAspire.Api.Client.Products;
 using CleanAspire.Api.Client.Refresh;
-using CleanAspire.Api.Client.Register;
 using CleanAspire.Api.Client.ResendConfirmationEmail;
 using CleanAspire.Api.Client.ResetPassword;
 using CleanAspire.Api.Client.Stocks;
@@ -66,11 +65,6 @@ namespace CleanAspire.Api.Client
         public global::CleanAspire.Api.Client.Refresh.RefreshRequestBuilder Refresh
         {
             get => new global::CleanAspire.Api.Client.Refresh.RefreshRequestBuilder(PathParameters, RequestAdapter);
-        }
-        /// <summary>The register property</summary>
-        public global::CleanAspire.Api.Client.Register.RegisterRequestBuilder Register
-        {
-            get => new global::CleanAspire.Api.Client.Register.RegisterRequestBuilder(PathParameters, RequestAdapter);
         }
         /// <summary>The resendConfirmationEmail property</summary>
         public global::CleanAspire.Api.Client.ResendConfirmationEmail.ResendConfirmationEmailRequestBuilder ResendConfirmationEmail

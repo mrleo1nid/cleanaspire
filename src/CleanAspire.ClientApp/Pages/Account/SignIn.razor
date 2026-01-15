@@ -1,4 +1,4 @@
-﻿@page "/account/signin"
+@page "/account/signin"
 @inject ISignInManagement SignInManagement
 @using System.ComponentModel.DataAnnotations
 @using CleanAspire.ClientApp.Services.Identity
@@ -10,12 +10,6 @@
         <MudText Typo="Typo.h5">@L[AppSettings.AppName]</MudText>
     </div>
     <div class="d-flex flex-column gap-2">
-        @if (!RequiresTwoFactor)
-        {
-            <div class="d-flex flex-row gap-1">
-                <MudText>@L["Don't have an account?"]</MudText> <MudLink Href="/account/signup">@L["Signup"]</MudLink>
-            </div>
-        }
         <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
             <DataAnnotationsValidator />
             <div class="d-flex flex-column gap-2">

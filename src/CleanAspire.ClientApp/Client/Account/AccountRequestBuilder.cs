@@ -12,7 +12,6 @@ using CleanAspire.Api.Client.Account.Login2fa;
 using CleanAspire.Api.Client.Account.Logout;
 using CleanAspire.Api.Client.Account.Microsoft;
 using CleanAspire.Api.Client.Account.Profile;
-using CleanAspire.Api.Client.Account.Signup;
 using CleanAspire.Api.Client.Account.UpdateEmail;
 using Microsoft.Kiota.Abstractions.Extensions;
 using Microsoft.Kiota.Abstractions;
@@ -87,11 +86,6 @@ namespace CleanAspire.Api.Client.Account
         public global::CleanAspire.Api.Client.Account.Profile.ProfileRequestBuilder Profile
         {
             get => new global::CleanAspire.Api.Client.Account.Profile.ProfileRequestBuilder(PathParameters, RequestAdapter);
-        }
-        /// <summary>The signup property</summary>
-        public global::CleanAspire.Api.Client.Account.Signup.SignupRequestBuilder Signup
-        {
-            get => new global::CleanAspire.Api.Client.Account.Signup.SignupRequestBuilder(PathParameters, RequestAdapter);
         }
         /// <summary>The updateEmail property</summary>
         public global::CleanAspire.Api.Client.Account.UpdateEmail.UpdateEmailRequestBuilder UpdateEmail
