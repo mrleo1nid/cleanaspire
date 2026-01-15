@@ -462,6 +462,170 @@ group
 - Domain-specific операции (dispatch/receive) вместо generic CRUD
 - Бизнес-логика инкапсулирована в Commands
 
+#### Application Layer - Commands
+
+**Файл:** `src/CleanAspire.Application/Features/Stocks/Commands/StockDispatchingCommand.cs`
+
+```csharp
+public record StockDispatchingCommand : IFusionCacheRefreshRequest<Unit>, IRequiresValidation
+{
+    public string ProductId { get; set; } = string.Empty;
+    public int Quantity { get; set; }
+    public string Location { get; set; } = string.Empty;
+    public IEnumerable<string>? Tags => new[] { "stocks" };
+}
+
+public class StockDispatchingCommandHandler : IRequestHandler<StockDispatchingCommand, Unit>
+{
+    private readonly IApplicationDbContext _context;
+
+    public async ValueTask<Unit> Handle(
+        StockDispatchingCommand request,
+        CancellationToken cancellationToken
+    )
+    {
+        // Validate that the product exists
+        var product = await _context.Products.FirstOrDefaultAsync(
+            p => p.Id == request.ProductId,
+            cancellationToken
+        );
+
+        if (product == null)
+        {
+            throw new KeyNotFoundException(
+                $"Product with Product ID '{request.ProductId}' was not found."
+            );
+        }
+
+        // Check if the stock record exists for the given ProductId and Location
+        var existingStock = await _context.Stocks.FirstOrDefaultAsync(
+            s => s.ProductId == request.ProductId && s.Location == request.Location,
+            cancellationToken
+        );
+
+        if (existingStock == null)
+        {
+            throw new KeyNotFoundException(
+                $"No stock record found for Product ID '{request.ProductId}' at Location '{request.Location}'."
+            );
+        }
+
+        // Validate that the stock quantity is sufficient
+        if (existingStock.Quantity < request.Quantity)
+        {
+            throw new InvalidOperationException(
+                $"Insufficient stock quantity. Available: {existingStock.Quantity}, Requested: {request.Quantity}"
+            );
+        }
+
+        // Reduce the stock quantity
+        existingStock.Quantity -= request.Quantity;
+
+        // If stock quantity is zero, remove the stock record
+        if (existingStock.Quantity == 0)
+        {
+            _context.Stocks.Remove(existingStock);
+        }
+        else
+        {
+            // Update the stock record
+            _context.Stocks.Update(existingStock);
+        }
+
+        await _context.SaveChangesAsync(cancellationToken);
+        return Unit.Value;
+    }
+}
+```
+
+**Файл:** `src/CleanAspire.Application/Features/Stocks/Commands/StockReceivingCommand.cs`
+
+```csharp
+public record StockReceivingCommand : IFusionCacheRefreshRequest<Unit>, IRequiresValidation
+{
+    public string ProductId { get; set; } = string.Empty;
+    public int Quantity { get; set; }
+    public string Location { get; set; } = string.Empty;
+    public IEnumerable<string>? Tags => new[] { "stocks" };
+}
+
+public class StockReceivingCommandHandler : IRequestHandler<StockReceivingCommand, Unit>
+{
+    private readonly IApplicationDbContext _context;
+
+    public async ValueTask<Unit> Handle(
+        StockReceivingCommand request,
+        CancellationToken cancellationToken
+    )
+    {
+        // Validate that the product exists
+        var product = await _context.Products.FirstOrDefaultAsync(
+            p => p.Id == request.ProductId,
+            cancellationToken
+        );
+
+        if (product == null)
+        {
+            throw new KeyNotFoundException(
+                $"Product with Product ID '{request.ProductId}' was not found."
+            );
+        }
+
+        // Check if the stock record already exists for the given ProductId and Location
+        var existingStock = await _context.Stocks.FirstOrDefaultAsync(
+            s => s.ProductId == request.ProductId && s.Location == request.Location,
+            cancellationToken
+        );
+
+        if (existingStock != null)
+        {
+            // If the stock record exists, update the quantity
+            existingStock.Quantity += request.Quantity;
+            _context.Stocks.Update(existingStock);
+        }
+        else
+        {
+            // If no stock record exists, create a new one
+            var newStockEntry = new Stock
+            {
+                ProductId = request.ProductId,
+                Location = request.Location,
+                Quantity = request.Quantity,
+            };
+
+            _context.Stocks.Add(newStockEntry);
+        }
+
+        await _context.SaveChangesAsync(cancellationToken);
+        return Unit.Value;
+    }
+}
+```
+
+#### Infrastructure Layer - EF Core Configuration
+
+**Файл:** `src/CleanAspire.Infrastructure/Persistence/Configurations/StockConfiguration.cs`
+
+```csharp
+public class StockConfiguration : IEntityTypeConfiguration<Stock>
+{
+    public void Configure(EntityTypeBuilder<Stock> builder)
+    {
+        builder.Property(x => x.ProductId).HasMaxLength(50).IsRequired();
+
+        builder
+            .HasOne(x => x.Product)
+            .WithMany()
+            .HasForeignKey(x => x.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Property(x => x.Location).HasMaxLength(12).IsRequired();
+
+        builder.Ignore(e => e.DomainEvents);
+    }
+}
+```
+
 ---
 
 ### 1.3 Tenant (Мультитенанси)
