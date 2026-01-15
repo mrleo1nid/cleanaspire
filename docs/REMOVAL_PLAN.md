@@ -216,11 +216,29 @@ Stock
 
 **Описание:** Удаление полей, связанных с OAuth и расширенным профилем.
 
-- [ ] `src/CleanAspire.Domain/Identities/ApplicationUser.cs`
+- [x] `src/CleanAspire.Domain/Identities/ApplicationUser.cs`
   - Удалить поле `Provider` (хранит "Local", "Google", "Microsoft")
-  - Удалить поле `RefreshToken` и `RefreshTokenExpiryTime` (если не используется)
-  - **Рассмотреть сохранение:** `Nickname`, `TimeZoneId`, `LanguageCode`, `AvatarUrl`, `SuperiorId`
-  - **Удалить:** `TenantId` (связано с мультитенанси)
+  - Удалить поле `RefreshToken` и `RefreshTokenExpiryTime` (оставлено для JWT refresh)
+  - **Сохранено:** `Nickname`, `TimeZoneId`, `LanguageCode`, `AvatarUrl`, `SuperiorId`
+  - **Удалено:** `TenantId` (связано с мультитенанси)
+- [x] `src/CleanAspire.Infrastructure/Persistence/Configurations/IdentityUserConfiguration.cs`
+  - Удалить конфигурацию Provider и TenantId
+- [x] `src/CleanAspire.Api/IdentityApiAdditionalEndpointsExtensions.cs`
+  - Удалить Provider и TenantId из ProfileRequest/ProfileResponse
+  - Удалить использование Provider и TenantId в updateProfile
+- [x] `src/CleanAspire.Infrastructure/Services/ClaimsPrincipalExtensions.cs`
+  - Удалить GetProvider() и GetTenantId()
+  - Удалить Provider и TenantId из ApplicationClaimTypes
+- [x] `src/CleanAspire.Infrastructure/Services/CurrentUserAccessor.cs`
+  - Удалить TenantId property
+- [x] `src/CleanAspire.Application/Common/Interfaces/ICurrentUserAccessor.cs`
+  - Удалить TenantId из интерфейса
+- [x] `src/CleanAspire.Infrastructure/Persistence/Interceptors/AuditableEntityInterceptor.cs`
+  - Удалить использование TenantId в SetCreationAuditInfo
+- [x] `src/CleanAspire.Infrastructure/Persistence/Seed/ApplicationDbContextInitializer.cs`
+  - Удалить Provider и TenantId из seed данных
+- [x] `src/CleanAspire.ClientApp/Pages/Account/Profile/ProfileSetting.razor`
+  - Удалить TenantId из ProfileModel
 
 ---
 
@@ -856,11 +874,12 @@ Stock
 **Commit:** `git commit -m "feat: remove 2FA functionality"` ✅
 
 **2.4 Очистка ApplicationUser**
-- [ ] Удалить поле Provider
-- [ ] Удалить поля RefreshToken/RefreshTokenExpiryTime (если не используется)
-- [ ] Создать миграцию для удаления полей
+- [x] Удалить поле Provider
+- [x] Оставить RefreshToken/RefreshTokenExpiryTime (используется для JWT refresh)
+- [x] Удалить поле TenantId
+- [x] Обновить все использования Provider и TenantId
 
-**Commit:** `git commit -m "refactor: clean up ApplicationUser fields"`
+**Commit:** `git commit -m "refactor: clean up ApplicationUser fields (remove Provider and TenantId)"` ✅
 
 **Проверка:**
 - [ ] Компиляция проекта

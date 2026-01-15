@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -28,11 +28,6 @@ public static class ClaimsPrincipalExtensions
         return claimsPrincipal.FindFirstValue(ClaimTypes.Name);
     }
 
-    public static string? GetProvider(this ClaimsPrincipal claimsPrincipal)
-    {
-        return claimsPrincipal.FindFirstValue(ApplicationClaimTypes.Provider);
-    }
-
     public static string? GetDisplayName(this ClaimsPrincipal claimsPrincipal)
     {
         return claimsPrincipal.FindFirstValue(ClaimTypes.GivenName);
@@ -58,11 +53,6 @@ public static class ClaimsPrincipalExtensions
         return claimsPrincipal.FindFirstValue(ApplicationClaimTypes.TenantName);
     }
 
-    public static string? GetTenantId(this ClaimsPrincipal claimsPrincipal)
-    {
-        return claimsPrincipal.FindFirstValue(ApplicationClaimTypes.TenantId);
-    }
-
     public static bool GetStatus(this ClaimsPrincipal claimsPrincipal)
     {
         return Convert.ToBoolean(claimsPrincipal.FindFirstValue(ApplicationClaimTypes.Status));
@@ -84,8 +74,6 @@ public static class ClaimsPrincipalExtensions
 
 public static class ApplicationClaimTypes
 {
-    public const string Provider = "Provider";
-    public const string TenantId = "TenantId";
     public const string SuperiorId = "SuperiorId";
     public const string SuperiorName = "SuperiorName";
     public const string Status = "Status";

@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -10,8 +10,6 @@ namespace CleanAspire.Domain.Identities;
 public class ApplicationUser : IdentityUser, IAuditableEntity
 {
     public string? Nickname { get; set; }
-    public string? Provider { get; set; } = "Local";
-    public string? TenantId { get; set; }
     public string? AvatarUrl { get; set; }
     public string? RefreshToken { get; set; }
     public DateTime RefreshTokenExpiryTime { get; set; }

@@ -268,8 +268,6 @@ public class ApplicationDbContextInitializer
         var adminUser = new ApplicationUser
         {
             UserName = "Administrator",
-            Provider = "Local",
-            TenantId = tenantId,
             Nickname = "Administrator",
             Email = "admin@example.com",
             EmailConfirmed = true,
@@ -298,8 +296,6 @@ public class ApplicationDbContextInitializer
         var demoUser = new ApplicationUser
         {
             UserName = "Demo",
-            Provider = "Local",
-            TenantId = tenantId,
             Nickname = "Demo",
             Email = "Demo@example.com",
             EmailConfirmed = true,

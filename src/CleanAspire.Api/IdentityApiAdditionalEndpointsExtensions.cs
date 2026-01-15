@@ -119,7 +119,6 @@ public static class IdentityApiAdditionalEndpointsExtensions
                     appUser.TimeZoneId = request.TimeZoneId;
                     appUser.LanguageCode = request.LanguageCode;
                     appUser.SuperiorId = request.SuperiorId;
-                    appUser.TenantId = request.TenantId;
                     appUser.AvatarUrl = request.AvatarUrl;
                     await userManager.UpdateAsync(user).ConfigureAwait(false);
                     if (!string.IsNullOrEmpty(request.Email))
@@ -463,10 +462,8 @@ public static class IdentityApiAdditionalEndpointsExtensions
                 await userManager.GetEmailAsync(user)
                 ?? throw new NotSupportedException("Users must have an email."),
             IsEmailConfirmed = await userManager.IsEmailConfirmedAsync(user),
-            TenantId = appUser.TenantId,
             Nickname = appUser.Nickname,
             LanguageCode = appUser.LanguageCode,
-            Provider = appUser.Provider,
             SuperiorId = appUser.SuperiorId,
             TimeZoneId = appUser.TimeZoneId,
             AvatarUrl = appUser.AvatarUrl,
@@ -689,17 +686,11 @@ public sealed class ProfileRequest
     [Description("Tenant identifier for multi-tenant systems. Must be a GUID in version 7 format.")]
     [MaxLength(50, ErrorMessage = "Nickname cannot exceed 50 characters.")]
     public string? SuperiorId { get; init; }
-
-    [Description("Tenant identifier for multi-tenant systems. Must be a GUID in version 7 format.")]
-    [MaxLength(50, ErrorMessage = "Nickname cannot exceed 50 characters.")]
-    public string? TenantId { get; set; }
 }
 
 public sealed class ProfileResponse
 {
     public string? Nickname { get; init; }
-    public string? Provider { get; init; }
-    public string? TenantId { get; init; }
     public string? AvatarUrl { get; set; }
     public required string UserId { get; init; }
     public required string Username { get; init; }

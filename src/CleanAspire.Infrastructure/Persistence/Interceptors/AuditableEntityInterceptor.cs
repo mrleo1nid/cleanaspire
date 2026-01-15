@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -97,7 +97,6 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
     private void UpdateAuditableEntities(DbContext context)
     {
         var userId = _currentUserAccessor.UserId;
-        var tenantId = _currentUserAccessor.TenantId;
         var now = _dateTime.Now;
 
         foreach (var entry in context.ChangeTracker.Entries<IAuditableEntity>())
@@ -105,7 +104,7 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
             switch (entry.State)
             {
                 case EntityState.Added:
-                    SetCreationAuditInfo(entry.Entity, userId, tenantId, now);
+                    SetCreationAuditInfo(entry.Entity, userId, now);
                     break;
 
                 case EntityState.Modified:
@@ -123,19 +122,10 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
         }
     }
 
-    private static void SetCreationAuditInfo(
-        IAuditableEntity entity,
-        string userId,
-        string tenantId,
-        DateTime now
-    )
+    private static void SetCreationAuditInfo(IAuditableEntity entity, string userId, DateTime now)
     {
         entity.CreatedBy = userId;
         entity.Created = now;
-        if (entity is IMustHaveTenant mustTenant)
-            mustTenant.TenantId = tenantId;
-        if (entity is IMayHaveTenant mayTenant)
-            mayTenant.TenantId = tenantId;
     }
 
     private static void SetModificationAuditInfo(

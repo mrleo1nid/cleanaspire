@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -15,8 +15,6 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         // Each User can have many UserLogins
         builder.HasOne(x => x.Superior).WithMany().HasForeignKey(u => u.SuperiorId);
         builder.Property(x => x.Nickname).HasMaxLength(50);
-        builder.Property(x => x.Provider).HasMaxLength(50);
-        builder.Property(x => x.TenantId).HasMaxLength(50);
         builder.Property(x => x.AvatarUrl).HasMaxLength(255);
         builder.Property(x => x.RefreshToken).HasMaxLength(255);
         builder.Property(x => x.LanguageCode).HasMaxLength(255);
