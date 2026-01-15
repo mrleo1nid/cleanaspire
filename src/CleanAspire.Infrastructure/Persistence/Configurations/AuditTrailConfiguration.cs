@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-
 using CleanAspire.Domain.Entities;
 using CleanAspire.Infrastructure.Persistence.Conversions;
 using Microsoft.EntityFrameworkCore;
@@ -15,13 +14,13 @@ public class AuditTrailConfiguration : IEntityTypeConfiguration<AuditTrail>
 {
     public void Configure(EntityTypeBuilder<AuditTrail> builder)
     {
-        builder.HasOne(x => x.Owner)
+        builder
+            .HasOne(x => x.Owner)
             .WithMany()
             .HasForeignKey(x => x.UserId)
             .OnDelete(DeleteBehavior.SetNull);
         builder.Navigation(e => e.Owner).AutoInclude();
-        builder.Property(t => t.AuditType)
-            .HasConversion<string>();
+        builder.Property(t => t.AuditType).HasConversion<string>();
         builder.Property(e => e.AffectedColumns).HasJsonConversion();
         builder.Property(u => u.OldValues).HasJsonConversion();
         builder.Property(u => u.NewValues).HasJsonConversion();

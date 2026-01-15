@@ -54,23 +54,41 @@ public class StocksWithPaginationQueryHandler
                     ),
                 pageNumber: request.PageNumber,
                 pageSize: request.PageSize,
-                mapperFunc: t => new StockDto
+                mapperFunc: t =>
                 {
-                    Id = t.Id,
-                    ProductId = t.ProductId ?? string.Empty,
-                    Product = new ProductDto
+                    var productId = t.ProductId ?? string.Empty;
+                    var product = t.Product;
+                    return new StockDto
                     {
-                        Category = t.Product?.Category ?? ProductCategory.Electronics,
-                        Currency = t.Product?.Currency,
-                        Description = t.Product?.Description,
-                        Id = t.Product?.Id ?? string.Empty,
-                        Name = t.Product?.Name ?? string.Empty,
-                        Price = t.Product?.Price ?? 0,
-                        SKU = t.Product?.SKU ?? string.Empty,
-                        UOM = t.Product?.UOM,
-                    },
-                    Quantity = t.Quantity,
-                    Location = t.Location,
+                        Id = t.Id,
+                        ProductId = productId,
+                        Product =
+                            product != null
+                                ? new ProductDto
+                                {
+                                    Category = product.Category,
+                                    Currency = product.Currency,
+                                    Description = product.Description,
+                                    Id = product.Id,
+                                    Name = product.Name,
+                                    Price = product.Price,
+                                    SKU = product.SKU,
+                                    UOM = product.UOM,
+                                }
+                                : new ProductDto
+                                {
+                                    Category = ProductCategory.Electronics,
+                                    Currency = null,
+                                    Description = null,
+                                    Id = string.Empty,
+                                    Name = string.Empty,
+                                    Price = 0,
+                                    SKU = string.Empty,
+                                    UOM = null,
+                                },
+                        Quantity = t.Quantity,
+                        Location = t.Location,
+                    };
                 },
                 cancellationToken: cancellationToken
             );
