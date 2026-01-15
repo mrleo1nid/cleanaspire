@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -18,7 +18,6 @@ public class CookieAuthenticationStateProvider(
 ) : AuthenticationStateProvider, ISignInManagement
 {
     private const string CACHEKEY_CREDENTIAL = "_Credential";
-    private bool authenticated = false;
     private readonly ClaimsPrincipal unauthenticated = new(new ClaimsIdentity());
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -26,7 +25,6 @@ public class CookieAuthenticationStateProvider(
         var indexedDb = serviceProvider.GetRequiredService<IndexedDbCache>();
         var onlineStatusInterop = serviceProvider.GetRequiredService<OnlineStatusInterop>();
         var offlineState = serviceProvider.GetRequiredService<OfflineModeState>();
-        authenticated = false;
         // default to not authenticated
         var user = unauthenticated;
         ProfileResponse? profileResponse = null;
@@ -62,18 +60,17 @@ public class CookieAuthenticationStateProvider(
                 // in this example app, name and email are the same
                 var claims = new List<Claim>
                 {
-                    new(ClaimTypes.NameIdentifier, profileResponse.UserId),
-                    new(ClaimTypes.Name, profileResponse.Username),
-                    new(ClaimTypes.Email, profileResponse.Email),
-                    new(ClaimTypes.GivenName, profileResponse.Nickname),
-                    new(ClaimTypes.Locality, profileResponse.TimeZoneId),
-                    new(ClaimTypes.Country, profileResponse.LanguageCode),
+                    new(ClaimTypes.NameIdentifier, profileResponse.UserId ?? string.Empty),
+                    new(ClaimTypes.Name, profileResponse.Username ?? string.Empty),
+                    new(ClaimTypes.Email, profileResponse.Email ?? string.Empty),
+                    new(ClaimTypes.GivenName, profileResponse.Nickname ?? string.Empty),
+                    new(ClaimTypes.Locality, profileResponse.TimeZoneId ?? string.Empty),
+                    new(ClaimTypes.Country, profileResponse.LanguageCode ?? string.Empty),
                 };
 
                 // set the principal
                 var id = new ClaimsIdentity(claims, nameof(CookieAuthenticationStateProvider));
                 user = new ClaimsPrincipal(id);
-                authenticated = true;
             }
         }
         catch { }

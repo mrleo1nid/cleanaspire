@@ -1,4 +1,4 @@
-﻿@page "/products/edit/{Id}"
+@page "/products/edit/{Id}"
 @using CleanAspire.ClientApp.Components.Autocompletes
 @using CleanAspire.ClientApp.Components.Breadcrumbs
 @using CleanAspire.ClientApp.Services.Products
@@ -79,7 +79,7 @@
     };
 	protected override async Task OnInitializedAsync()
 	{
-		var result = await ProductServiceProxy.GetProductByIdAsync(Id);
+		var result = await ProductServiceProxy.GetProductByIdAsync(Id ?? string.Empty);
 		result.Switch(
 			dto =>
 			{
@@ -94,7 +94,7 @@
                         Currency = dto.Currency,
                         Description = dto.Description
                     };
-                _breadcrumbItems.Add(new BreadcrumbItem(model.Sku, href: $"/products/edit/{Id}"));
+                _breadcrumbItems.Add(new BreadcrumbItem(model.Sku ?? string.Empty, href: $"/products/edit/{Id}"));
             },
             error => Snackbar.Add(error.Message, Severity.Error)
         );
@@ -107,7 +107,7 @@
         if (success == true)
         {
             _saving = true;
-            var result = await ProductServiceProxy.UpdateProductAsync(model);
+            var result = await ProductServiceProxy.UpdateProductAsync(model!);
             _saving = result.Match(
                 ok =>
                 {

@@ -1,4 +1,4 @@
-﻿@page "/stocks/index"
+@page "/stocks/index"
 <PageTitle>@Title</PageTitle>
 
 <MudDataGrid T="StockDto" Dense="true" Hover="true"
@@ -45,25 +45,25 @@
         </TemplateColumn>
         <PropertyColumn Title="@L["SKU"]" Property="x => x.ProductId">
             <CellTemplate>
-				@context.Item.Product.Sku
+				@(context.Item.Product?.Sku ?? string.Empty)
             </CellTemplate>
         </PropertyColumn>
         <PropertyColumn Title="@L["Product Name"]" Property="x => x.ProductId" Sortable="false">
             <CellTemplate>
-                <MudText Typo="Typo.body1">@context.Item.Product.Name</MudText>
-				<MudText Typo="Typo.body1">@context.Item.Product.Description</MudText>
+                <MudText Typo="Typo.body1">@(context.Item.Product?.Name ?? string.Empty)</MudText>
+				<MudText Typo="Typo.body1">@(context.Item.Product?.Description ?? string.Empty)</MudText>
             </CellTemplate>
         </PropertyColumn>
         <PropertyColumn Title="@L["Location"]" Property="x => x.Location" />
         <PropertyColumn Title="@L["Quantity"]" Property="x => x.Quantity" Format="#,#" AggregateDefinition="_qtyAggregation" />
         <PropertyColumn Title="@L["UOM"]" Property="x => x.ProductId" Sortable="false">
             <CellTemplate>
-				@context.Item.Product.Uom
+				@(context.Item.Product?.Uom ?? string.Empty)
             </CellTemplate>
         </PropertyColumn>
         <PropertyColumn Title="@L["Amount"]" Property="x => x.Product" Sortable="false">
             <CellTemplate>
-				@($"{((context.Item.Quantity) * (context.Item.Product.Price)).ToString()} {context.Item.Product.Currency}")
+				@($"{((context.Item.Quantity ?? 0) * (context.Item.Product?.Price ?? 0)).ToString()} {context.Item.Product?.Currency ?? string.Empty}")
             </CellTemplate>
         </PropertyColumn>
     </Columns>
@@ -94,7 +94,7 @@
             query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
             var cacheKey = $"_{query.Keywords}_{query.PageSize}_{query.PageNumber}_{query.OrderBy}_{query.SortDirection}";
             var result = await ApiClientServiceProxy.QueryAsync(cacheKey, () => ApiClient.Stocks.Pagination.PostAsync(query), tags, timeSpan);
-            return new GridData<StockDto> { TotalItems = (int)result.TotalItems, Items = result.Items };
+            return new GridData<StockDto> { TotalItems = (int)(result?.TotalItems ?? 0), Items = result?.Items ?? new List<StockDto>() };
         }
         finally
         {
@@ -135,7 +135,7 @@
         var parameters = new DialogParameters<StockDialog>
         {
            {x=>x.Inbound, false},
-           {x=>x.model, new StockDialog.Model(){ Location = item.Location, Quantity=item.Quantity, ProductId=item.ProductId } }
+           {x=>x.model, new StockDialog.Model(){ Location = item.Location ?? string.Empty, Quantity=item.Quantity, ProductId=item.ProductId ?? string.Empty } }
         };
         await DialogServiceHelper.ShowDialogAsync<StockDialog>(L["Stock dispatching"], parameters, new DialogOptions() { MaxWidth = MaxWidth.Small },
         async (state) =>

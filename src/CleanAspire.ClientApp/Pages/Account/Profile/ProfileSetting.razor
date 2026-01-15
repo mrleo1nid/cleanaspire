@@ -1,4 +1,4 @@
-﻿@using CleanAspire.ClientApp.Components.Autocompletes
+@using CleanAspire.ClientApp.Components.Autocompletes
 
 @using Microsoft.Kiota.Abstractions
 
@@ -53,7 +53,7 @@
                 Email = userModel?.Email ?? string.Empty,
                 Nickname = userModel?.Nickname ?? string.Empty,
                 Username = userModel?.Username ?? string.Empty,
-                AvatarUrl = userModel?.AvatarUrl,
+                AvatarUrl = userModel?.AvatarUrl ?? string.Empty,
                 LanguageCode = userModel?.LanguageCode,
                 SuperiorId = userModel?.SuperiorId,
                 TenantId = userModel?.TenantId,
@@ -73,12 +73,19 @@
         try
         {
             var antiforgeryToken = await ApiClient.FileManagement.AntiforgeryToken.GetAsync();
+            if (antiforgeryToken == null)
+            {
+                Snackbar.Add(L["Failed to get antiforgery token."], Severity.Error);
+                return;
+            }
             var request = new MultipartBody();
             request.AddOrReplacePart("overwrite", "text/plain", "false");
             request.AddOrReplacePart("folder", "text/plain", $"{model.Id}");
             request.AddOrReplacePart("cropSize_width", "text/plain", $"{150}");
             request.AddOrReplacePart("cropSize_height", "text/plain", $"{150}");
-            request.AddOrReplacePart($"__{antiforgeryToken.HeaderName}", "text/plain", $"{antiforgeryToken.RequestToken}");
+            var headerName = antiforgeryToken.HeaderName ?? string.Empty;
+            var requestToken = antiforgeryToken.RequestToken ?? string.Empty;
+            request.AddOrReplacePart($"__{headerName}", "text/plain", requestToken);
             var filename = file.Name;
             var stream = new MemoryStream();
             await file.OpenReadStream(int.MaxValue).CopyToAsync(stream);
@@ -86,7 +93,11 @@
             var response = await ApiClient.FileManagement.Image.PostAsync(request);
             if (response is not null && response.Any())
             {
-                model.AvatarUrl = response.FirstOrDefault().Url;
+                var firstResponse = response.FirstOrDefault();
+                if (firstResponse != null)
+                {
+                    model.AvatarUrl = firstResponse.Url ?? string.Empty;
+                }
             }
         }
         catch

@@ -1,4 +1,4 @@
-﻿
+
 @inherits MudBaseButton
 
 <MudButton OnClick="OnClickAsync" StartIcon="@StartIcon" Disabled="@IsDisabled" IconColor="@IconColor" Variant="@Variant" Color="@Color" Size="@Size">
@@ -66,24 +66,16 @@
     /// </summary>
     [Parameter]
     public Variant Variant { get; set; } = Variant.Text;
+    /// <summary>
+    /// Indicates whether the button is in a loading state.
+    /// </summary>
     [Parameter]
-    public bool Loading
-    {
-        get => _loading;
-        set
-        {
-            if (_loading == value)
-                return;
-
-            _loading = value;
-            StateHasChanged();
-        }
-    }
+    public bool Loading { get; set; }
     [Parameter]
-    public RenderFragment ChildContent { get; set; }  // Adding ChildContent parameter
+    public RenderFragment? ChildContent { get; set; }  // Adding ChildContent parameter
 
     [Parameter]
-    public RenderFragment LoadingContent { get; set; }
+    public RenderFragment? LoadingContent { get; set; }
 
     [Parameter]
     public Color LoadingCircularColor { get; set; } = Color.Primary;
@@ -96,13 +88,23 @@
 
     private bool IsDisabled => Disabled || (Loading && DisableWhenLoading);
 
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        _loading = Loading;
+    }
+
     private async Task OnClickAsync()
     {
         if (IsDisabled)
             return;
 
         _loading = true;
+        Loading = true;
+        StateHasChanged();
         await base.OnClick.InvokeAsync(null);
         _loading = false;
+        Loading = false;
+        StateHasChanged();
     }
 }

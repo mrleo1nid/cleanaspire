@@ -1,4 +1,4 @@
-﻿@using CleanAspire.ClientApp.Services.Navigation
+@using CleanAspire.ClientApp.Services.Navigation
 
 <MudPaper Elevation="1" Square="true">
     <MudToolBar Class="gap-2" Style="height:50px">
@@ -35,7 +35,7 @@
                                         <MudBadge Class="d-flex mr-20" Origin="Origin.CenterRight" Content="@_badgeTextSoon" Color="Color.Info" Overlap="true" BadgeClass="ml-5">
                                             <MudText>@L[nav.Label]</MudText>
                                         </MudBadge>
-                                        <MudText Typo="Typo.body2">@L[nav.Description]</MudText>
+                                        <MudText Typo="Typo.body2">@L[nav.Description ?? string.Empty]</MudText>
                                     </MudListItem>
                                 }
                                 else if (nav.Status == PageStatus.New)
@@ -44,7 +44,7 @@
                                         <MudBadge Class="d-flex mr-20" Origin="Origin.CenterRight" Content="@_badgeTextNew" Color="Color.Success" Overlap="true" BadgeClass="ml-5">
                                             <MudText>@L[nav.Label]</MudText>
                                         </MudBadge>
-                                        <MudText Typo="Typo.body2">@L[nav.Description]</MudText>
+                                        <MudText Typo="Typo.body2">@L[nav.Description ?? string.Empty]</MudText>
                                     </MudListItem>
                                 }
                                 else
@@ -53,7 +53,7 @@
                                         <div class="d-flex">
                                         <MudText Typo="Typo.body1" Color="@(string.IsNullOrEmpty(nav.Href)?Color.Default:Color.Primary)">@L[nav.Label]</MudText>
                                         </div>
-                                        <MudText Typo="Typo.body2">@L[nav.Description]</MudText>
+                                        <MudText Typo="Typo.body2">@L[nav.Description ?? string.Empty]</MudText>
                                     </MudListItem>
                                 }
 

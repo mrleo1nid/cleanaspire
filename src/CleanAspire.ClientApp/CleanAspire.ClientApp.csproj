@@ -1,5 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
-
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
@@ -10,7 +9,8 @@
         <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
         <RootNamespace>CleanAspire.ClientApp</RootNamespace>
         <AssemblyName>CleanAspire.ClientApp</AssemblyName>
-
+        <!-- Suppress CS0108 warnings from MudBlazor components that hide Logger property -->
+        <NoWarn>$(NoWarn);CS0108</NoWarn>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.2" />
@@ -19,8 +19,15 @@
         <PackageReference Include="Microsoft.Kiota.Abstractions" Version="1.21.1" />
         <PackageReference Include="Microsoft.Kiota.Http.HttpClientLibrary" Version="1.21.1" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.2" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.2" PrivateAssets="all" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="10.0.2" />
+        <PackageReference
+            Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+            Version="10.0.2"
+            PrivateAssets="all"
+        />
+        <PackageReference
+            Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication"
+            Version="10.0.2"
+        />
         <PackageReference Include="Microsoft.Kiota.Serialization.Form" Version="1.21.1" />
         <PackageReference Include="Microsoft.Kiota.Serialization.Json" Version="1.21.1" />
         <PackageReference Include="Microsoft.Kiota.Serialization.Multipart" Version="1.21.1" />
@@ -29,9 +36,10 @@
         <PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="2.1.0" />
         <PackageReference Include="OneOf" Version="3.0.271" />
     </ItemGroup>
-
     <ItemGroup>
-        <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+        <ServiceWorker
+            Include="wwwroot\service-worker.js"
+            PublishedContent="wwwroot\service-worker.published.js"
+        />
     </ItemGroup>
-
 </Project>

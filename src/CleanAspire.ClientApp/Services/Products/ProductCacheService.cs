@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -16,7 +16,6 @@
 
 using CleanAspire.Api.Client.Models;
 using CleanAspire.ClientApp.Services.JsInterop;
-
 
 namespace CleanAspire.ClientApp.Services.Products;
 
@@ -51,7 +50,7 @@ public class ProductCacheService
     /// <param name="product">The product to save or update.</param>
     public async Task SaveOrUpdateProductAsync(ProductDto product)
     {
-        var productCacheKey = GenerateProductCacheKey(product.Id);
+        var productCacheKey = GenerateProductCacheKey(product.Id ?? string.Empty);
         await _cache.SaveDataAsync(DATABASENAME, productCacheKey, product, new[] { OBJECT_TAG });
     }
 
@@ -71,7 +70,10 @@ public class ProductCacheService
     /// </summary>
     /// <param name="cacheKey">The cache key for the paginated data.</param>
     /// <param name="data">The paginated product data to cache.</param>
-    public async Task SaveOrUpdatePaginatedProductsAsync(string cacheKey, PaginatedResultOfProductDto data)
+    public async Task SaveOrUpdatePaginatedProductsAsync(
+        string cacheKey,
+        PaginatedResultOfProductDto data
+    )
     {
         await _cache.SaveDataAsync(DATABASENAME, cacheKey, data, new[] { PAGINATION_TAG });
     }
@@ -90,11 +92,14 @@ public class ProductCacheService
     /// Retrieves all cached paginated product results.
     /// </summary>
     /// <returns>A dictionary of cached paginated product results.</returns>
-    public async Task<Dictionary<string, PaginatedResultOfProductDto>> GetAllCachedPaginatedResultsAsync()
+    public async Task<
+        Dictionary<string, PaginatedResultOfProductDto>
+    > GetAllCachedPaginatedResultsAsync()
     {
         var cachedData = await _cache.GetDataByTagsAsync<PaginatedResultOfProductDto>(
-                DATABASENAME, new[] { PAGINATION_TAG }
-            );
+            DATABASENAME,
+            new[] { PAGINATION_TAG }
+        );
         return cachedData ?? new Dictionary<string, PaginatedResultOfProductDto>();
     }
 
@@ -118,8 +123,10 @@ public class ProductCacheService
         {
             await DeleteProductAsync(pid);
         }
-        var cachedPaginatedProducts = await _cache
-            .GetDataByTagsAsync<PaginatedResultOfProductDto>(DATABASENAME, new[] { PAGINATION_TAG });
+        var cachedPaginatedProducts = await _cache.GetDataByTagsAsync<PaginatedResultOfProductDto>(
+            DATABASENAME,
+            new[] { PAGINATION_TAG }
+        );
 
         if (cachedPaginatedProducts != null && cachedPaginatedProducts.Any())
         {
@@ -127,11 +134,14 @@ public class ProductCacheService
             {
                 var key = kvp.Key;
                 var paginatedProducts = kvp.Value;
-                paginatedProducts.Items = paginatedProducts.Items
-                    .Where(p => !productIds.Contains(p.Id))
-                    .ToList();
+                if (paginatedProducts != null && paginatedProducts.Items != null)
+                {
+                    paginatedProducts.Items = paginatedProducts
+                        .Items.Where(p => p != null && !productIds.Contains(p.Id ?? string.Empty))
+                        .ToList();
 
-                paginatedProducts.TotalItems = paginatedProducts.Items.Count;
+                    paginatedProducts.TotalItems = paginatedProducts.Items.Count;
+                }
                 await _cache.SaveDataAsync(
                     DATABASENAME,
                     key,
@@ -148,12 +158,19 @@ public class ProductCacheService
     /// <param name="command">The create command to cache.</param>
     public async Task StoreOfflineCreateCommandAsync(CreateProductCommand command)
     {
-        var cached = await _cache.GetDataAsync<List<CreateProductCommand>>(
-            DATABASENAME, OFFLINE_CREATE_COMMAND_CACHE_KEY
-        ) ?? new List<CreateProductCommand>();
+        var cached =
+            await _cache.GetDataAsync<List<CreateProductCommand>>(
+                DATABASENAME,
+                OFFLINE_CREATE_COMMAND_CACHE_KEY
+            ) ?? new List<CreateProductCommand>();
 
         cached.Add(command);
-        await _cache.SaveDataAsync(DATABASENAME, OFFLINE_CREATE_COMMAND_CACHE_KEY, cached, new[] { COMMANDS_TAG });
+        await _cache.SaveDataAsync(
+            DATABASENAME,
+            OFFLINE_CREATE_COMMAND_CACHE_KEY,
+            cached,
+            new[] { COMMANDS_TAG }
+        );
     }
 
     /// <summary>
@@ -162,12 +179,19 @@ public class ProductCacheService
     /// <param name="command">The update command to cache.</param>
     public async Task StoreOfflineUpdateCommandAsync(UpdateProductCommand command)
     {
-        var cached = await _cache.GetDataAsync<List<UpdateProductCommand>>(
-            DATABASENAME, OFFLINE_UPDATE_COMMAND_CACHE_KEY
-        ) ?? new List<UpdateProductCommand>();
+        var cached =
+            await _cache.GetDataAsync<List<UpdateProductCommand>>(
+                DATABASENAME,
+                OFFLINE_UPDATE_COMMAND_CACHE_KEY
+            ) ?? new List<UpdateProductCommand>();
 
         cached.Add(command);
-        await _cache.SaveDataAsync(DATABASENAME, OFFLINE_UPDATE_COMMAND_CACHE_KEY, cached, new[] { COMMANDS_TAG });
+        await _cache.SaveDataAsync(
+            DATABASENAME,
+            OFFLINE_UPDATE_COMMAND_CACHE_KEY,
+            cached,
+            new[] { COMMANDS_TAG }
+        );
     }
 
     /// <summary>
@@ -176,33 +200,58 @@ public class ProductCacheService
     /// <param name="command">The delete command to cache.</param>
     public async Task StoreOfflineDeleteCommandAsync(DeleteProductCommand command)
     {
-        var cached = await _cache.GetDataAsync<List<DeleteProductCommand>>(
-            DATABASENAME, OFFLINE_DELETE_COMMAND_CACHE_KEY
-        ) ?? new List<DeleteProductCommand>();
+        var cached =
+            await _cache.GetDataAsync<List<DeleteProductCommand>>(
+                DATABASENAME,
+                OFFLINE_DELETE_COMMAND_CACHE_KEY
+            ) ?? new List<DeleteProductCommand>();
 
         cached.Add(command);
-        await _cache.SaveDataAsync(DATABASENAME, OFFLINE_DELETE_COMMAND_CACHE_KEY, cached, new[] { COMMANDS_TAG });
+        await _cache.SaveDataAsync(
+            DATABASENAME,
+            OFFLINE_DELETE_COMMAND_CACHE_KEY,
+            cached,
+            new[] { COMMANDS_TAG }
+        );
     }
 
     /// <summary>
     /// Retrieves all pending offline commands.
     /// </summary>
     /// <returns>A tuple containing the count of all pending commands and lists of create, update, and delete commands.</returns>
-    public async Task<Tuple<int, List<CreateProductCommand>, List<UpdateProductCommand>, List<DeleteProductCommand>>> GetAllPendingCommandsAsync()
+    public async Task<
+        Tuple<
+            int,
+            List<CreateProductCommand>,
+            List<UpdateProductCommand>,
+            List<DeleteProductCommand>
+        >
+    > GetAllPendingCommandsAsync()
     {
-        var createCommands = await _cache.GetDataAsync<List<CreateProductCommand>>(
-            IndexedDbCache.DATABASENAME, OFFLINE_CREATE_COMMAND_CACHE_KEY
-        ) ?? new List<CreateProductCommand>();
+        var createCommands =
+            await _cache.GetDataAsync<List<CreateProductCommand>>(
+                IndexedDbCache.DATABASENAME,
+                OFFLINE_CREATE_COMMAND_CACHE_KEY
+            ) ?? new List<CreateProductCommand>();
 
-        var updateCommands = await _cache.GetDataAsync<List<UpdateProductCommand>>(
-            IndexedDbCache.DATABASENAME, OFFLINE_UPDATE_COMMAND_CACHE_KEY
-        ) ?? new List<UpdateProductCommand>();
+        var updateCommands =
+            await _cache.GetDataAsync<List<UpdateProductCommand>>(
+                IndexedDbCache.DATABASENAME,
+                OFFLINE_UPDATE_COMMAND_CACHE_KEY
+            ) ?? new List<UpdateProductCommand>();
 
-        var deleteCommands = await _cache.GetDataAsync<List<DeleteProductCommand>>(
-            IndexedDbCache.DATABASENAME, OFFLINE_DELETE_COMMAND_CACHE_KEY
-        ) ?? new List<DeleteProductCommand>();
+        var deleteCommands =
+            await _cache.GetDataAsync<List<DeleteProductCommand>>(
+                IndexedDbCache.DATABASENAME,
+                OFFLINE_DELETE_COMMAND_CACHE_KEY
+            ) ?? new List<DeleteProductCommand>();
 
-        return new Tuple<int, List<CreateProductCommand>, List<UpdateProductCommand>, List<DeleteProductCommand>>(
+        return new Tuple<
+            int,
+            List<CreateProductCommand>,
+            List<UpdateProductCommand>,
+            List<DeleteProductCommand>
+        >(
             createCommands.Count + updateCommands.Count + deleteCommands.Count,
             createCommands,
             updateCommands,

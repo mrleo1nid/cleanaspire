@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -175,11 +175,19 @@ public class ApplicationDbContextInitializer
 
     public async Task SeedAsync()
     {
+        _logger.LogInformation("Starting database seeding process...");
         try
         {
+            _logger.LogInformation("Starting user seeding...");
             await SeedUsersAsync();
+            _logger.LogInformation("User seeding completed.");
+
+            _logger.LogInformation("Starting data seeding...");
             await SeedDataAsync();
+            _logger.LogInformation("Data seeding completed.");
+
             _context.ChangeTracker.Clear();
+            _logger.LogInformation("Database seeding process completed successfully.");
         }
         catch (Exception ex)
         {
@@ -244,10 +252,19 @@ public class ApplicationDbContextInitializer
         }
 
         if (await _userManager.Users.AnyAsync())
+        {
+            _logger.LogInformation("Users already exist. Skipping user seeding.");
             return;
-        var tenantId = _context.Tenants.First().Id;
+        }
+
+        _logger.LogInformation("Retrieving tenant for user seeding...");
+        var tenant = await _context.Tenants.FirstAsync();
+        var tenantId = tenant.Id;
+        _logger.LogInformation("Tenant retrieved: {TenantId}", tenantId);
+
         var defaultPassword = "P@ssw0rd!";
         _logger.LogInformation("Seeding users...");
+
         var adminUser = new ApplicationUser
         {
             UserName = "Administrator",
@@ -260,6 +277,23 @@ public class ApplicationDbContextInitializer
             TimeZoneId = "Asia/Shanghai",
             TwoFactorEnabled = false,
         };
+
+        _logger.LogInformation("Creating administrator user...");
+        var adminResult = await _userManager.CreateAsync(adminUser, defaultPassword);
+        if (!adminResult.Succeeded)
+        {
+            _logger.LogError(
+                "Failed to create administrator user. Errors: {Errors}",
+                string.Join(", ", adminResult.Errors.Select(e => e.Description))
+            );
+            throw new InvalidOperationException(
+                $"Failed to create administrator user: {string.Join(", ", adminResult.Errors.Select(e => e.Description))}"
+            );
+        }
+        _logger.LogInformation(
+            "Administrator user created successfully. UserId: {UserId}",
+            adminUser.Id
+        );
 
         var demoUser = new ApplicationUser
         {
@@ -275,15 +309,32 @@ public class ApplicationDbContextInitializer
             SuperiorId = adminUser.Id,
         };
 
-        await _userManager.CreateAsync(adminUser, defaultPassword);
-        await _userManager.CreateAsync(demoUser, defaultPassword);
+        _logger.LogInformation("Creating demo user...");
+        var demoResult = await _userManager.CreateAsync(demoUser, defaultPassword);
+        if (!demoResult.Succeeded)
+        {
+            _logger.LogError(
+                "Failed to create demo user. Errors: {Errors}",
+                string.Join(", ", demoResult.Errors.Select(e => e.Description))
+            );
+            throw new InvalidOperationException(
+                $"Failed to create demo user: {string.Join(", ", demoResult.Errors.Select(e => e.Description))}"
+            );
+        }
+        _logger.LogInformation("Demo user created successfully. UserId: {UserId}", demoUser.Id);
+        _logger.LogInformation("User seeding completed successfully.");
     }
 
     private async Task SeedDataAsync()
     {
         if (await _context.Products.AnyAsync())
+        {
+            _logger.LogInformation("Products already exist. Skipping data seeding.");
             return;
+        }
+
         _logger.LogInformation("Seeding data...");
+        _logger.LogInformation("Creating product list...");
         var products = new List<Product>
         {
             new Product
@@ -354,8 +405,12 @@ public class ApplicationDbContextInitializer
             },
         };
 
+        _logger.LogInformation("Adding {Count} products to database...", products.Count);
         await _context.Products.AddRangeAsync(products);
         await _context.SaveChangesAsync();
+        _logger.LogInformation("Products saved successfully.");
+
+        _logger.LogInformation("Creating stock entries...");
         var stocks = new List<Stock>
         {
             new Stock
@@ -381,7 +436,10 @@ public class ApplicationDbContextInitializer
             },
         };
 
+        _logger.LogInformation("Adding {Count} stock entries to database...", stocks.Count);
         await _context.Stocks.AddRangeAsync(stocks);
         await _context.SaveChangesAsync();
+        _logger.LogInformation("Stock entries saved successfully.");
+        _logger.LogInformation("Data seeding completed successfully.");
     }
 }

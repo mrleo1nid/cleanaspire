@@ -1,4 +1,4 @@
-﻿@using Net.Codecrete.QrCodeGenerator
+@using Net.Codecrete.QrCodeGenerator
 <div class="d-flex flex-column gap-2">
     <MudText Typo="Typo.h4">@L["Two-factor authentication"]</MudText>
     <MudDivider />
@@ -132,15 +132,18 @@
         {
             await ApiClient.Account.Disable2fa.GetAsync();
             var profile = UserProfileStore.Profile;
-            profile.IsTwoFactorEnabled = false;
-            UserProfileStore.Set(profile);
+            if (profile != null)
+            {
+                profile.IsTwoFactorEnabled = false;
+                UserProfileStore.Set(profile);
+            }
             Snackbar.Add(L["Two-factor authentication has been disabled successfully"], Severity.Success);
         }
         catch (ProblemDetails e)
         {
-            Snackbar.Add(e.Detail, Severity.Error);
+            Snackbar.Add(e.Detail ?? L["Failed to disable two-factor authentication"], Severity.Error);
         }
-        catch (ApiException e)
+        catch (ApiException)
         {
             Snackbar.Add(L["Failed to disable two-factor authentication"], Severity.Error);
         }
@@ -148,7 +151,7 @@
     }
     private async Task AuthenticatorAppValueChanged(bool value)
     {
-        if (Navigation.BaseUri == "https://cleanaspire.blazorserver.com/" && UserProfileStore.Profile.Username == "Administrator")
+        if (Navigation.BaseUri == "https://cleanaspire.blazorserver.com/" && UserProfileStore.Profile?.Username == "Administrator")
         {
             Snackbar.Add(L["Test accounts cannot enable two-factor authentication in the demo environment. Please use your own account for testing."], Severity.Info);
             return;
@@ -156,7 +159,7 @@
         if (value)
         {
             var response = await ApiClient.Account.GenerateAuthenticator.GetAsync(q => q.QueryParameters.AppName = AppSettings.AppName);
-            if (response is not null)
+            if (response is not null && !string.IsNullOrEmpty(response.AuthenticatorUri) && !string.IsNullOrEmpty(response.SharedKey))
             {
                 _showConfigureAuthenticatorAppDialog = true;
                 authenticatorUri = response.AuthenticatorUri;
@@ -177,8 +180,11 @@
         {
             await ApiClient.Account.Enable2fa.PostAsync(new Enable2faRequest() { AppName = AppSettings.AppName, VerificationCode = verificationCode });
             var profile = UserProfileStore.Profile;
-            profile.IsTwoFactorEnabled = true;
-            UserProfileStore.Set(profile);
+            if (profile != null)
+            {
+                profile.IsTwoFactorEnabled = true;
+                UserProfileStore.Set(profile);
+            }
             _showConfigureAuthenticatorAppDialog = false;
             Snackbar.Add(L["Two-factor authentication has been enabled successfully"], Severity.Success);
         }
@@ -200,10 +206,10 @@
         try
         {
             var response = await ApiClient.Account.GenerateRecoveryCodes.GetAsync();
-            recoveryCodes = response.Codes;
+            recoveryCodes = response?.Codes;
             Snackbar.Add(L["Recovery codes have been generated successfully. Please save them in a safe place."], Severity.Success);
         }
-        catch (ApiException e)
+        catch (ApiException)
         {
             Snackbar.Add(L["Failed to generate recovery codes"], Severity.Error);
         }

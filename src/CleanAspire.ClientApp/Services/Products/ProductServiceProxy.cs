@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -125,9 +125,15 @@ public class ProductServiceProxy
                     cacheKey,
                     paginatedProducts
                 );
-                foreach (var productDto in paginatedProducts.Items)
+                if (paginatedProducts?.Items != null)
                 {
-                    await _productCacheService.SaveOrUpdateProductAsync(productDto);
+                    foreach (var productDto in paginatedProducts.Items)
+                    {
+                        if (productDto != null)
+                        {
+                            await _productCacheService.SaveOrUpdateProductAsync(productDto);
+                        }
+                    }
                 }
             }
             return paginatedProducts ?? new PaginatedResultOfProductDto();
@@ -193,7 +199,7 @@ public class ProductServiceProxy
             {
                 var response = await _apiClient.Products.PostAsync(command);
                 await _apiClientServiceProxy.ClearCache(_cacheTags);
-                return response;
+                return response ?? new ProductDto();
             }
             catch (HttpValidationProblemDetails ex)
             {
@@ -238,12 +244,15 @@ public class ProductServiceProxy
                     foreach (var kvp in cachedPaginatedProducts)
                     {
                         var paginatedProducts = kvp.Value;
-                        paginatedProducts.Items.Insert(0, productDto);
-                        paginatedProducts.TotalItems++;
-                        await _productCacheService.SaveOrUpdatePaginatedProductsAsync(
-                            kvp.Key,
-                            paginatedProducts
-                        );
+                        if (paginatedProducts != null && paginatedProducts.Items != null)
+                        {
+                            paginatedProducts.Items.Insert(0, productDto);
+                            paginatedProducts.TotalItems++;
+                            await _productCacheService.SaveOrUpdatePaginatedProductsAsync(
+                                kvp.Key,
+                                paginatedProducts
+                            );
+                        }
                     }
                 }
                 return productDto;
@@ -324,21 +333,26 @@ public class ProductServiceProxy
                 {
                     var key = kvp.Key;
                     var paginatedProducts = kvp.Value;
-                    var item = paginatedProducts.Items.FirstOrDefault(x => x.Id == productDto.Id);
-                    if (item != null)
+                    if (paginatedProducts != null && paginatedProducts.Items != null)
                     {
-                        item.Category = productDto.Category;
-                        item.Currency = productDto.Currency;
-                        item.Description = productDto.Description;
-                        item.Name = productDto.Name;
-                        item.Price = productDto.Price;
-                        item.Sku = productDto.Sku;
-                        item.Uom = productDto.Uom;
+                        var item = paginatedProducts.Items.FirstOrDefault(x =>
+                            x?.Id == productDto.Id
+                        );
+                        if (item != null)
+                        {
+                            item.Category = productDto.Category;
+                            item.Currency = productDto.Currency;
+                            item.Description = productDto.Description;
+                            item.Name = productDto.Name;
+                            item.Price = productDto.Price;
+                            item.Sku = productDto.Sku;
+                            item.Uom = productDto.Uom;
+                        }
+                        await _productCacheService.SaveOrUpdatePaginatedProductsAsync(
+                            kvp.Key,
+                            paginatedProducts
+                        );
                     }
-                    await _productCacheService.SaveOrUpdatePaginatedProductsAsync(
-                        kvp.Key,
-                        paginatedProducts
-                    );
                 }
             }
             return true;
@@ -451,7 +465,7 @@ public class ProductServiceProxy
             {
                 await ProcessCommandsAsync(
                     cachedDeleteProductCommands,
-                    command => DeleteProductsAsync(command.Ids)
+                    command => DeleteProductsAsync(command.Ids ?? new List<string>())
                 );
             }
 

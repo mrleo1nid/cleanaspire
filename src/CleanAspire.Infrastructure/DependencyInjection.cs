@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -11,11 +11,13 @@ using CleanAspire.Infrastructure.Persistence.Seed;
 using CleanAspire.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using ZiggyCreatures.Caching.Fusion;
+using ZiggyCreatures.Caching.Fusion.Serialization.SystemTextJson;
 
 namespace CleanAspire.Infrastructure;
 
@@ -38,8 +40,11 @@ public static class DependencyInjection
             .Configure<MinioOptions>(configuration.GetSection(MinioOptions.Key))
             .AddSingleton(s => s.GetRequiredService<IOptions<MinioOptions>>().Value);
         services
+            .Configure<RedisOptions>(configuration.GetSection(RedisOptions.Key))
+            .AddSingleton(s => s.GetRequiredService<IOptions<RedisOptions>>().Value);
+        services
             .AddDatabase(configuration)
-            .AddFusionCacheService()
+            .AddFusionCacheService(configuration)
             .AddScoped<IUploadService, MinioUploadService>();
 
         return services;
@@ -154,34 +159,60 @@ public static class DependencyInjection
         }
     }
 
-    private static IServiceCollection AddFusionCacheService(this IServiceCollection services)
+    private static IServiceCollection AddFusionCacheService(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
     {
         services.AddMemoryCache();
-        services
-            .AddFusionCache()
-            .WithDefaultEntryOptions(
-                new FusionCacheEntryOptions
-                {
-                    // Absolute TTL for the item
-                    Duration = TimeSpan.FromMinutes(60),
 
-                    // ---- Resilience: fail-safe & timeouts ----
-                    IsFailSafeEnabled = true, // Serve a recent value if the backend is flaky
-                    FailSafeMaxDuration = TimeSpan.FromHours(3), // Allow using a stale value for up to 3h during incidents
-                    FailSafeThrottleDuration = TimeSpan.FromSeconds(30), // After a failure, keep serving stale for 30s to avoid hammering deps
+        var redisOptions =
+            configuration.GetSection(RedisOptions.Key).Get<RedisOptions>()
+            ?? new RedisOptions { Enabled = false };
 
-                    // Factory (loader) timeouts: keep requests snappy under slow dependencies
-                    FactorySoftTimeout = TimeSpan.FromMilliseconds(300), // ~your P95 latency to the data source
-                    FactoryHardTimeout = TimeSpan.FromSeconds(2), // 1.5–2s hard cap; fail fast rather than dragging the request
+        var fusionCacheBuilder = services.AddFusionCache();
 
-                    // ---- Anti-stampede ----
-                    JitterMaxDuration = TimeSpan.FromSeconds(30), // Spread expirations (~10% of Duration; cap at 30s)
-                    LockTimeout = TimeSpan.FromMilliseconds(800), // Wait briefly for a single refresher; others don’t dog-pile
+        // Configure Redis as distributed cache if enabled
+        if (redisOptions.Enabled && !string.IsNullOrWhiteSpace(redisOptions.ConnectionString))
+        {
+            // Register Redis distributed cache
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = redisOptions.ConnectionString;
+            });
 
-                    // ---- Proactive refresh ----
-                    EagerRefreshThreshold = 0.8f, // When 80% of TTL has elapsed, return current value and refresh in background
-                }
+            // Configure FusionCache to use the registered distributed cache
+            fusionCacheBuilder.WithDistributedCache(sp =>
+                sp.GetRequiredService<Microsoft.Extensions.Caching.Distributed.IDistributedCache>()
             );
+
+            // Add serializer for distributed cache
+            fusionCacheBuilder.WithSerializer(new FusionCacheSystemTextJsonSerializer());
+        }
+
+        fusionCacheBuilder.WithDefaultEntryOptions(
+            new FusionCacheEntryOptions
+            {
+                // Absolute TTL for the item
+                Duration = TimeSpan.FromMinutes(60),
+
+                // ---- Resilience: fail-safe & timeouts ----
+                IsFailSafeEnabled = true, // Serve a recent value if the backend is flaky
+                FailSafeMaxDuration = TimeSpan.FromHours(3), // Allow using a stale value for up to 3h during incidents
+                FailSafeThrottleDuration = TimeSpan.FromSeconds(30), // After a failure, keep serving stale for 30s to avoid hammering deps
+
+                // Factory (loader) timeouts: keep requests snappy under slow dependencies
+                FactorySoftTimeout = TimeSpan.FromMilliseconds(300), // ~your P95 latency to the data source
+                FactoryHardTimeout = TimeSpan.FromSeconds(2), // 1.5–2s hard cap; fail fast rather than dragging the request
+
+                // ---- Anti-stampede ----
+                JitterMaxDuration = TimeSpan.FromSeconds(30), // Spread expirations (~10% of Duration; cap at 30s)
+                LockTimeout = TimeSpan.FromMilliseconds(800), // Wait briefly for a single refresher; others don’t dog-pile
+
+                // ---- Proactive refresh ----
+                EagerRefreshThreshold = 0.8f, // When 80% of TTL has elapsed, return current value and refresh in background
+            }
+        );
         return services;
     }
 

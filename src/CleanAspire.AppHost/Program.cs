@@ -11,9 +11,13 @@ var postgresDatabase = builder
     .WithImage("pgvector/pgvector", "pg18") // pgvector supports embedded vector search.
     .AddDatabase("postgresdb");
 
+// Redis cache for distributed caching
+var redisCache = builder.AddRedis("rediscache");
+
 var apiService = builder
     .AddProject<Projects.CleanAspire_Api>("apiservice")
     .WithReference(postgresDatabase)
+    .WithReference(redisCache)
     // Configure database settings to use PostgreSQL
     // WithReference automatically creates ConnectionStrings:postgresdb variable
     // Map it to DatabaseSettings__ConnectionString using the reference expression
@@ -22,7 +26,11 @@ var apiService = builder
         "DatabaseSettings__ConnectionString",
         postgresDatabase.Resource.ConnectionStringExpression
     )
-    .WaitFor(postgresDatabase);
+    // Configure Redis settings
+    .WithEnvironment("Redis__Enabled", "true")
+    .WithEnvironment("Redis__ConnectionString", redisCache.Resource.ConnectionStringExpression)
+    .WaitFor(postgresDatabase)
+    .WaitFor(redisCache);
 
 builder
     .AddProject<Projects.CleanAspire_WebApp>("blazorweb")

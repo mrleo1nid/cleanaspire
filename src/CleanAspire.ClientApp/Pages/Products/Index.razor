@@ -1,4 +1,4 @@
-﻿@page "/products/index"
+@page "/products/index"
 @using CleanAspire.ClientApp.Pages.Products.Components
 @using CleanAspire.ClientApp.Services.Products
 
@@ -107,7 +107,7 @@ RowStyleFunc="_rowStyleFunc"
             query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Id";
             query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
             var result = await ProductServiceProxy.GetPaginatedProductsAsync(query);
-            return new GridData<ProductDto> { TotalItems = (int)result.TotalItems, Items = result.Items };
+            return new GridData<ProductDto> { TotalItems = (int)(result?.TotalItems ?? 0), Items = result?.Items ?? new List<ProductDto>() };
         }
         finally
         {
@@ -146,7 +146,7 @@ RowStyleFunc="_rowStyleFunc"
         {
             if (_selectedItems.Any())
             {
-                var ids = _selectedItems.Select(x => x.Id).ToList();
+                var ids = _selectedItems.Select(x => x.Id ?? string.Empty).Where(id => !string.IsNullOrEmpty(id)).ToList();
                 var result = await ProductServiceProxy.DeleteProductsAsync(ids);
                 result.Switch(
                    async ok =>
@@ -167,7 +167,7 @@ RowStyleFunc="_rowStyleFunc"
     }
     private void Edit(ProductDto dto)
     {
-        Navigation.NavigateTo($"/products/edit/{dto.Id}");
+        Navigation.NavigateTo($"/products/edit/{dto.Id ?? string.Empty}");
     }
 
     private async Task OnExport()
@@ -181,6 +181,11 @@ RowStyleFunc="_rowStyleFunc"
         try
         {
             var stream = await ApiClient.Products.Export.GetAsync(q => q.QueryParameters.Keywords = _keywords);
+            if (stream == null)
+            {
+                Snackbar.Add(L["Failed to export products."], Severity.Error);
+                return;
+            }
             var fileName = $"products_{DateTime.Now:yyyyMMddHHmmss}.csv";
             using var memoryStream = new MemoryStream();
             await stream.CopyToAsync(memoryStream);
@@ -209,10 +214,17 @@ RowStyleFunc="_rowStyleFunc"
         try
         {
             var antiforgeryToken = await ApiClient.FileManagement.AntiforgeryToken.GetAsync();
+            if (antiforgeryToken == null)
+            {
+                Snackbar.Add(L["Failed to get antiforgery token."], Severity.Error);
+                return;
+            }
             var request = new MultipartBody();
             request.AddOrReplacePart("overwrite", "text/plain", "false");
             request.AddOrReplacePart("folder", "text/plain", $"{DateTime.UtcNow.ToString("yyyyMMdd")}");
-            request.AddOrReplacePart($"__{antiforgeryToken.HeaderName}", "text/plain", $"{antiforgeryToken.RequestToken}");
+            var headerName = antiforgeryToken.HeaderName ?? string.Empty;
+            var requestToken = antiforgeryToken.RequestToken ?? string.Empty;
+            request.AddOrReplacePart($"__{headerName}", "text/plain", requestToken);
             var filename = file.Name;
             var stream = new MemoryStream();
             await file.OpenReadStream(int.MaxValue).CopyToAsync(stream);
