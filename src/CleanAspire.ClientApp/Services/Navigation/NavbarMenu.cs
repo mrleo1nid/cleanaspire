@@ -1,11 +1,11 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 // Purpose:
 // 1. **Navigation Menu Structure**:
 //    - Provides a clear and organized layout of menu items for easy access to different sections of the application.
-//    - Supports submenus for grouping related functionality (e.g., Products, Orders, Reports, Help).
+//    - Supports submenus for grouping related functionality (e.g., Orders, Reports, Help).
 
 // 2. **User Experience**:
 //    - Enhances the user experience by displaying icons (`StartIcon`, `EndIcon`) and descriptions for each menu item.
@@ -30,34 +30,6 @@ public static class NavbarMenu
             EndIcon = Icons.Material.Filled.KeyboardArrowDown,
             SubItems = new List<MenuItem>
             {
-                new MenuItem
-                {
-                    Label = "Products",
-                    SubItems = new List<MenuItem>
-                    {
-                        new MenuItem
-                        {
-                            Label = "All Products",
-                            Href = "/products/index",
-                            Status = PageStatus.Completed,
-                            Description = "View all available products in our inventory.",
-                        },
-                        new MenuItem
-                        {
-                            Label = "Stock Inquiry",
-                            Href = "/stocks/index",
-                            Status = PageStatus.New,
-                            Description = "Check product stock levels.",
-                        },
-                        new MenuItem
-                        {
-                            Label = "Best Sellers",
-                            Href = "",
-                            Status = PageStatus.Completed,
-                            Description = "See our top-selling products.",
-                        },
-                    },
-                },
                 new MenuItem
                 {
                     Label = "Orders",
@@ -124,13 +96,6 @@ public static class NavbarMenu
                     Href = "/help/documentation",
                     Status = PageStatus.Completed,
                     Description = "Access the user and developer documentation.",
-                },
-                new MenuItem
-                {
-                    Label = "GitHub",
-                    Href = "https://github.com/neozhu/cleanaspire/",
-                    Status = PageStatus.Completed,
-                    Description = "Visit our GitHub repository.",
                 },
             },
         },

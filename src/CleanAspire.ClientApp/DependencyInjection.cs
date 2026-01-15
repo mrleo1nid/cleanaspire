@@ -10,7 +10,6 @@ using CleanAspire.ClientApp.Services;
 using CleanAspire.ClientApp.Services.Identity;
 using CleanAspire.ClientApp.Services.Interfaces;
 using CleanAspire.ClientApp.Services.JsInterop;
-using CleanAspire.ClientApp.Services.Products;
 using CleanAspire.ClientApp.Services.UserPreferences;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;

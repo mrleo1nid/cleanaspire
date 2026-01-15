@@ -9,7 +9,6 @@ using CleanAspire.Api.Client.Manage;
 using CleanAspire.Api.Client.Refresh;
 using CleanAspire.Api.Client.ResendConfirmationEmail;
 using CleanAspire.Api.Client.ResetPassword;
-using CleanAspire.Api.Client.Tenants;
 using Microsoft.Kiota.Abstractions.Extensions;
 using Microsoft.Kiota.Abstractions;
 using System.Collections.Generic;
@@ -68,11 +67,6 @@ namespace CleanAspire.Api.Client
         public global::CleanAspire.Api.Client.ResetPassword.ResetPasswordRequestBuilder ResetPassword
         {
             get => new global::CleanAspire.Api.Client.ResetPassword.ResetPasswordRequestBuilder(PathParameters, RequestAdapter);
-        }
-        /// <summary>The tenants property</summary>
-        public global::CleanAspire.Api.Client.Tenants.TenantsRequestBuilder Tenants
-        {
-            get => new global::CleanAspire.Api.Client.Tenants.TenantsRequestBuilder(PathParameters, RequestAdapter);
         }
         /// <summary>
         /// Instantiates a new <see cref="global::CleanAspire.Api.Client.ApiClient"/> and sets the default values.

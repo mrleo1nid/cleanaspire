@@ -32,16 +32,6 @@ builder
         options.DefaultScheme = IdentityConstants.ApplicationScheme;
         options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
     })
-    .AddGoogle(googleOptions =>
-    {
-        googleOptions.ClientId =
-            builder.Configuration.GetValue<string>("Authentication:Google:ClientId")
-            ?? string.Empty;
-        googleOptions.ClientSecret =
-            builder.Configuration.GetValue<string>("Authentication:Google:ClientSecret")
-            ?? string.Empty;
-        ;
-    })
     .AddIdentityCookies();
 builder.Services.AddAuthorizationBuilder();
 builder.Services.AddTransient<

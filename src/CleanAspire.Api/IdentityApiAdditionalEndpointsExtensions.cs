@@ -12,7 +12,6 @@ using System.Text;
 using System.Text.Encodings.Web;
 using CleanAspire.Domain.Identities;
 using CleanAspire.Infrastructure.Persistence;
-using Google.Apis.Auth;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
@@ -683,8 +682,8 @@ public sealed class ProfileRequest
     [RegularExpression("^[a-z]{2,3}(-[A-Z]{2})?$", ErrorMessage = "Invalid language code format.")]
     public string? LanguageCode { get; set; }
 
-    [Description("Tenant identifier for multi-tenant systems. Must be a GUID in version 7 format.")]
-    [MaxLength(50, ErrorMessage = "Nickname cannot exceed 50 characters.")]
+    [Description("Superior user identifier. Must be a GUID in version 7 format.")]
+    [MaxLength(50, ErrorMessage = "SuperiorId cannot exceed 50 characters.")]
     public string? SuperiorId { get; init; }
 }
 
@@ -700,43 +699,4 @@ public sealed class ProfileResponse
     public string? LanguageCode { get; init; }
     public string? SuperiorId { get; init; }
     public bool IsTwoFactorEnabled { get; init; }
-}
-
-internal sealed record GoogleTokenResponse
-{
-    public string? access_token { get; set; }
-    public int expires_in { get; set; }
-    public string? id_token { get; set; }
-    public string? scope { get; set; }
-    public string? token_type { get; set; }
-    public string? refresh_token { get; set; }
-}
-
-internal sealed record GoogleAuthResponse(
-    string ExternalId,
-    string Username,
-    string Email,
-    string? ProfilePicture
-);
-
-internal sealed record MicrosoftTokenResponse
-{
-    public string? access_token { get; set; }
-    public string? token_type { get; set; }
-    public string? refresh_token { get; set; }
-    public int expires_in { get; set; }
-    public string? id_token { get; set; }
-    public string? scope { get; set; }
-}
-
-internal sealed record MicrosoftUserInfo
-{
-    public string? id { get; set; }
-    public string? displayName { get; set; }
-    public string? givenName { get; set; }
-    public string? surname { get; set; }
-    public string? mail { get; set; }
-    public string? userPrincipalName { get; set; }
-    public string? jobTitle { get; set; }
-    public string? officeLocation { get; set; }
 }

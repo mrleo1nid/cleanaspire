@@ -15,11 +15,6 @@ public interface IApplicationDbContext
     DbSet<AuditTrail> AuditTrails { get; set; }
 
     /// <summary>
-    /// Gets or sets the Tenants DbSet.
-    /// </summary>
-    DbSet<Tenant> Tenants { get; set; }
-
-    /// <summary>
     /// Saves all changes made in this context to the database.
     /// </summary>
     /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>

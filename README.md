@@ -1,7 +1,4 @@
 ## CleanAspire - .NET 10 Minimal API + Blazor WebAssembly PWA Template with Aspire Support
-[![.NET](https://github.com/neozhu/cleanaspire/actions/workflows/dotnet.yml/badge.svg)](https://github.com/neozhu/cleanaspire/actions/workflows/dotnet.yml)
-[![CodeQL](https://github.com/neozhu/cleanaspire/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/neozhu/cleanaspire/actions/workflows/github-code-scanning/codeql)
-[![Build and Push Docker Image](https://github.com/neozhu/cleanaspire/actions/workflows/docker.yml/badge.svg)](https://github.com/neozhu/cleanaspire/actions/workflows/docker.yml)
 
 ![blazorclient](./blazorclient.jpg)
 
@@ -10,12 +7,6 @@
 **CleanAspire** is a cutting-edge, open-source template built on **.NET 10** (and still compatible with **.NET 9** projects), designed to accelerate the development of **lightweight**, **fast**, and **simple** Blazor WebAssembly or Progressive Web Applications (PWA). It seamlessly integrates **Minimal APIs**, **Aspire**, and **Scalar** for modern API documentation.
 
 With a focus on **Clean Architecture** and **extreme code simplicity**, CleanAspire provides developers with the tools to create responsive and maintainable web applications with minimal effort. The template also supports **Microsoft.Kiota** to simplify API client generation, ensuring consistency and productivity in every project.  
-
-### 🎉 Auto-generate Code Using Chat GPTs
-
-![chatgpt](./gpts.png)
- [Link to CleanAspire Code Generator](https://chatgpt.com/g/g-677e40252ff88191933bb84567b62e7b-cleanaspire-code-generator)
- 
 
 ### 🌐 Offline Support  
 
@@ -59,18 +50,11 @@ By incorporating robust offline capabilities, CleanAspire empowers developers to
 7. **Cloud-Ready with Docker**  
    - Preconfigured for Docker, enabling easy deployment to cloud platforms or local environments.  
 
-8. **Integrated CI/CD Pipelines**  
-   - Includes GitHub Actions workflows for automated building, testing, and deployment.  
-
-9. **Offline Mode Support**  
+8. **Offline Mode Support**  
     - **Offline mode enabled by default** to provide a seamless experience even without internet access.  
     - Uses **IndexedDB** to cache data locally, allowing the application to retrieve data and function offline.  
     - The system detects the online/offline status and fetches data from **IndexedDB** when offline, ensuring uninterrupted access to key features.  
 
-
-### How to Create a New Object in a CRUD Application: A Step-by-Step Guide
-
-https://github.com/neozhu/cleanaspire/issues/34
 
 ### 🌟 Why Choose CleanAspire?  
 
@@ -78,17 +62,6 @@ https://github.com/neozhu/cleanaspire/issues/34
 - **Effortless Development:** Extreme simplicity in code makes it easy to start quickly and scale effectively.  
 - **Advanced API Integration:** Automate client-side API generation with Microsoft.Kiota for faster results.  
 - **Future-Ready Architecture:** Leverages the latest .NET 10 capabilities and Aspire hosting for modern web applications.
-- 
-
-### OpenAPI documentation
-- https://apiservice.blazorserver.com/scalar/v1
-
-### Demo site
-- https://cleanaspire.blazorserver.com/
-
-### Blazor WebAssembly Standalone PWA
-- https://standalone.blazorserver.com/
-
 
 ### Here is an example of a docker-compose.yml file for a local Docker deployment:
 
@@ -175,17 +148,12 @@ networks:
 
 ### Quick Start
 
-1. **Clone the Repo**:
-   ```bash
-   git clone https://github.com/neozhu/cleanaspire.git
-   ```
-
-2. **Navigate to the Project Folder**:
+1. **Navigate to the Project Folder**:
    ```bash
    cd CleanAspire
    ```
 
-3. **Run the Application**:
+2. **Run the Application**:
    ```bash
    dotnet run
    ```
@@ -332,21 +300,7 @@ CleanAspire/
 
 ```
 
-### Contributions
-
-Contributions are welcome! If you want to add features, report bugs, or just suggest improvements, please feel free to submit issues or pull requests.
-
 ### License
 
 This project is licensed under the [MIT License](LICENSE).
-
-### Get Involved
-
-- **Star the Repository**: If you like CleanAspire, please give it a star! 🌟
-- **Follow the Project**: Stay updated with the latest developments by watching the repository.
-- **Join Discussions**: Share your thoughts and ideas to make CleanAspire even better.
-
-### Contact
-
-Feel free to reach out if you have questions or feedback. Let's build something amazing together with **CleanAspire**!
 

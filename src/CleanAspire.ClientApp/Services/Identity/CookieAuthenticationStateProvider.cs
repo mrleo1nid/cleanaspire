@@ -94,7 +94,7 @@ public class CookieAuthenticationStateProvider(
             if (isOnline)
             {
                 // Online login
-                var response = await apiClient.Account.Login2fa.PostAsync(
+                var response = await apiClient.Login.PostAsync(
                     request,
                     options =>
                     {
@@ -151,72 +151,5 @@ public class CookieAuthenticationStateProvider(
         await apiClient.Account.Logout.PostAsync(cancellationToken: cancellationToken);
         // need to refresh auth state
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
-    }
-
-    public async Task LoginWithGoogle(
-        string authorizationCode,
-        string state,
-        CancellationToken cancellationToken = default
-    )
-    {
-        try
-        {
-            await apiClient.Account.Google.SignIn.PostAsync(
-                q =>
-                {
-                    q.QueryParameters.Code = authorizationCode;
-                    q.QueryParameters.State = state;
-                },
-                cancellationToken
-            );
-            NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
-        }
-        catch (ProblemDetails)
-        {
-            // Log and re-throw problem details exception
-            throw;
-        }
-        catch (ApiException)
-        {
-            // Log and re-throw API exception
-            throw;
-        }
-        catch (Exception)
-        {
-            // Log and re-throw general exception
-            throw;
-        }
-    }
-
-    public async Task LoginWithMicrosoft(
-        string authorizationCode,
-        string state,
-        CancellationToken cancellationToken = default
-    )
-    {
-        try
-        {
-            await apiClient.Account.Microsoft.SignIn.PostAsync(
-                q =>
-                {
-                    q.QueryParameters.Code = authorizationCode;
-                    q.QueryParameters.State = state;
-                },
-                cancellationToken
-            );
-            NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
-        }
-        catch (ProblemDetails)
-        {
-            throw;
-        }
-        catch (ApiException)
-        {
-            throw;
-        }
-        catch (Exception)
-        {
-            throw;
-        }
     }
 }

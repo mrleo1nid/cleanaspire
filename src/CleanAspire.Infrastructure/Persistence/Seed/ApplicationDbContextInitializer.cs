@@ -198,69 +198,11 @@ public class ApplicationDbContextInitializer
 
     private async Task SeedUsersAsync()
     {
-        // Check if tenants table exists by trying to query it
-        try
-        {
-            if (!(await _context.Tenants.AnyAsync()))
-            {
-                var tenants = new List<Tenant>()
-                {
-                    new()
-                    {
-                        Name = "Org - 1",
-                        Description = "Organization 1",
-                        Id = Guid.CreateVersion7().ToString(),
-                    },
-                    new()
-                    {
-                        Name = "Org - 2",
-                        Description = "Organization 2",
-                        Id = Guid.CreateVersion7().ToString(),
-                    },
-                };
-                _context.Tenants.AddRange(tenants);
-                await _context.SaveChangesAsync();
-            }
-        }
-        catch (Exception ex)
-            when (ex.Message.Contains("does not exist", StringComparison.OrdinalIgnoreCase)
-                || ex.Message.Contains("relation", StringComparison.OrdinalIgnoreCase)
-                || (
-                    ex.InnerException?.Message?.Contains(
-                        "does not exist",
-                        StringComparison.OrdinalIgnoreCase
-                    ) ?? false
-                )
-                || (
-                    ex.InnerException?.Message?.Contains(
-                        "relation",
-                        StringComparison.OrdinalIgnoreCase
-                    ) ?? false
-                )
-            )
-        {
-            _logger.LogWarning(
-                ex,
-                "Tenants table does not exist yet. Ensure migrations are applied before seeding."
-            );
-            return;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error checking tenants table. Skipping seed.");
-            return;
-        }
-
         if (await _userManager.Users.AnyAsync())
         {
             _logger.LogInformation("Users already exist. Skipping user seeding.");
             return;
         }
-
-        _logger.LogInformation("Retrieving tenant for user seeding...");
-        var tenant = await _context.Tenants.FirstAsync();
-        var tenantId = tenant.Id;
-        _logger.LogInformation("Tenant retrieved: {TenantId}", tenantId);
 
         var defaultPassword = "P@ssw0rd!";
         _logger.LogInformation("Seeding users...");

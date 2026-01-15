@@ -24,11 +24,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         : base(options) { }
 
     /// <summary>
-    /// Gets or sets the Tenants DbSet.
-    /// </summary>
-    public DbSet<Tenant> Tenants { get; set; } = null!;
-
-    /// <summary>
     /// Gets or sets the AuditTrails DbSet.
     /// </summary>
     public DbSet<AuditTrail> AuditTrails { get; set; } = null!;
