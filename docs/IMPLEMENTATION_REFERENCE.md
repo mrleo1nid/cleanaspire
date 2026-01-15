@@ -1037,6 +1037,169 @@ identityGroup
     .RequireAuthorization();
 ```
 
+### 4.3 Disable 2FA
+
+```csharp
+// GET /account/disable2fa
+routeGroup
+    .MapGet(
+        "/disable2fa",
+        async Task<Results<Ok, NotFound, BadRequest>> (
+            ClaimsPrincipal claimsPrincipal,
+            HttpContext context
+        ) =>
+        {
+            var userManager = context.RequestServices.GetRequiredService<
+                UserManager<TUser>
+            >();
+            var logger = context
+                .RequestServices.GetRequiredService<ILoggerFactory>()
+                .CreateLogger("Disable2FA");
+            var user = await userManager.GetUserAsync(claimsPrincipal);
+            if (user is null)
+            {
+                return TypedResults.NotFound();
+            }
+            var isTwoFactorEnabled = await userManager.GetTwoFactorEnabledAsync(user);
+            if (!isTwoFactorEnabled)
+            {
+                return TypedResults.BadRequest();
+            }
+            var result = await userManager.SetTwoFactorEnabledAsync(user, false);
+            if (!result.Succeeded)
+            {
+                logger.LogError("Failed to disable 2FA");
+                return TypedResults.BadRequest();
+            }
+
+            logger.LogInformation("User has disabled 2FA.");
+            return TypedResults.Ok();
+        }
+    )
+    .RequireAuthorization();
+```
+
+### 4.4 Login with 2FA
+
+```csharp
+// POST /account/login2fa
+routeGroup
+    .MapPost(
+        "/login2fa",
+        async Task<Results<Ok, ProblemHttpResult, NotFound>> (
+            [FromBody] LoginRequest login,
+            [FromQuery] bool? useCookies,
+            [FromQuery] bool? useSessionCookies,
+            HttpContext context
+        ) =>
+        {
+            var signInManager = context.RequestServices.GetRequiredService<
+                SignInManager<TUser>
+            >();
+            var userManager = context.RequestServices.GetRequiredService<
+                UserManager<TUser>
+            >();
+            var useCookieScheme = (useCookies == true) || (useSessionCookies == true);
+            var isPersistent = (useCookies == true) && (useSessionCookies != true);
+            signInManager.AuthenticationScheme = useCookieScheme
+                ? IdentityConstants.ApplicationScheme
+                : IdentityConstants.BearerScheme;
+
+            var user = await userManager.FindByNameAsync(login.Email);
+            if (user == null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            var result = await signInManager.PasswordSignInAsync(
+                login.Email,
+                login.Password,
+                isPersistent,
+                lockoutOnFailure: true
+            );
+
+            if (result.RequiresTwoFactor)
+            {
+                if (!string.IsNullOrEmpty(login.TwoFactorCode))
+                {
+                    result = await signInManager.TwoFactorAuthenticatorSignInAsync(
+                        login.TwoFactorCode,
+                        isPersistent,
+                        rememberClient: isPersistent
+                    );
+                }
+                else if (!string.IsNullOrEmpty(login.TwoFactorRecoveryCode))
+                {
+                    result = await signInManager.TwoFactorRecoveryCodeSignInAsync(
+                        login.TwoFactorRecoveryCode
+                    );
+                }
+            }
+
+            if (!result.Succeeded)
+            {
+                return TypedResults.Problem(
+                    result.ToString(),
+                    statusCode: StatusCodes.Status401Unauthorized
+                );
+            }
+
+            return TypedResults.Ok();
+        }
+    )
+    .AllowAnonymous();
+```
+
+### 4.5 Generate Recovery Codes
+
+```csharp
+// GET /account/generateRecoveryCodes
+routeGroup
+    .MapGet(
+        "generateRecoveryCodes",
+        async Task<Results<Ok<RecoveryCodesResponse>, NotFound, BadRequest>> (
+            ClaimsPrincipal claimsPrincipal,
+            HttpContext context
+        ) =>
+        {
+            var userManager = context.RequestServices.GetRequiredService<
+                UserManager<TUser>
+            >();
+            var user = await userManager.GetUserAsync(claimsPrincipal);
+            if (user is null)
+            {
+                return TypedResults.NotFound();
+            }
+            var isTwoFactorEnabled = await userManager.GetTwoFactorEnabledAsync(user);
+            if (!isTwoFactorEnabled)
+            {
+                return TypedResults.BadRequest();
+            }
+            int codeCount = 8;
+            var recoveryCodes = await userManager.GenerateNewTwoFactorRecoveryCodesAsync(
+                user,
+                codeCount
+            );
+            if (recoveryCodes is null)
+            {
+                return TypedResults.BadRequest();
+            }
+            return TypedResults.Ok(new RecoveryCodesResponse(recoveryCodes!));
+        }
+    )
+    .RequireAuthorization();
+```
+
+### 4.6 Request/Response Models
+
+```csharp
+internal sealed record AuthenticatorResponse(string SharedKey, string AuthenticatorUri);
+
+internal sealed record Enable2faRequest(string? AppName, string VerificationCode);
+
+internal sealed record RecoveryCodesResponse(IEnumerable<string> Codes);
+```
+
 ---
 
 ## 5. ApplicationUser расширения
