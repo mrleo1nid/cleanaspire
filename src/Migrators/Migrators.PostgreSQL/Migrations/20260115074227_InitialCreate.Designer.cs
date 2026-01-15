@@ -12,15 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CleanAspire.Migrators.PostgreSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241111102857_initialCreate")]
-    partial class initialCreate
+    [Migration("20260115074227_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0-rc.2.24474.1")
+                .HasAnnotation("ProductVersion", "10.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -90,9 +90,14 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
             modelBuilder.Entity("CleanAspire.Domain.Entities.Product", b =>
                 {
                     b.Property<string>("Id")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
                         .HasColumnName("id");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("category");
 
                     b.Property<DateTime?>("Created")
                         .HasColumnType("timestamp without time zone")
@@ -113,10 +118,6 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                         .HasColumnType("character varying(450)")
                         .HasColumnName("description");
 
-                    b.Property<byte[]>("Image")
-                        .HasColumnType("bytea")
-                        .HasColumnName("image");
-
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("last_modified");
@@ -136,9 +137,11 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                         .HasColumnType("numeric")
                         .HasColumnName("price");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer")
-                        .HasColumnName("quantity");
+                    b.Property<string>("SKU")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)")
+                        .HasColumnName("sku");
 
                     b.Property<string>("UOM")
                         .HasMaxLength(450)
@@ -155,6 +158,84 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                     b.ToTable("products", (string)null);
                 });
 
+            modelBuilder.Entity("CleanAspire.Domain.Entities.Stock", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("created");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("last_modified");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)")
+                        .HasColumnName("last_modified_by");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasMaxLength(12)
+                        .HasColumnType("character varying(12)")
+                        .HasColumnName("location");
+
+                    b.Property<string>("ProductId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("product_id");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer")
+                        .HasColumnName("quantity");
+
+                    b.HasKey("Id")
+                        .HasName("pk_stocks");
+
+                    b.HasIndex("ProductId")
+                        .HasDatabaseName("ix_stocks_product_id");
+
+                    b.ToTable("stocks", (string)null);
+                });
+
+            modelBuilder.Entity("CleanAspire.Domain.Entities.Tenant", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_tenants");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("ix_tenants_name");
+
+                    b.ToTable("tenants", (string)null);
+                });
+
             modelBuilder.Entity("CleanAspire.Domain.Identities.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -166,9 +247,10 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("access_failed_count");
 
-                    b.Property<byte[]>("Avatar")
-                        .HasColumnType("bytea")
-                        .HasColumnName("avatar");
+                    b.Property<string>("AvatarUrl")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("avatar_url");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -181,8 +263,8 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                         .HasColumnName("created");
 
                     b.Property<string>("CreatedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
                         .HasColumnName("created_by");
 
                     b.Property<string>("Email")
@@ -195,8 +277,8 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                         .HasColumnName("email_confirmed");
 
                     b.Property<string>("LanguageCode")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("language_code");
 
                     b.Property<DateTime?>("LastModified")
@@ -204,8 +286,8 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                         .HasColumnName("last_modified");
 
                     b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
                         .HasColumnName("last_modified_by");
 
                     b.Property<bool>("LockoutEnabled")
@@ -217,8 +299,8 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                         .HasColumnName("lockout_end");
 
                     b.Property<string>("Nickname")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
                         .HasColumnName("nickname");
 
                     b.Property<string>("NormalizedEmail")
@@ -237,8 +319,8 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                         .HasColumnName("password_hash");
 
                     b.Property<string>("PhoneNumber")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
                         .HasColumnName("phone_number");
 
                     b.Property<bool>("PhoneNumberConfirmed")
@@ -246,13 +328,13 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                         .HasColumnName("phone_number_confirmed");
 
                     b.Property<string>("Provider")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
                         .HasColumnName("provider");
 
                     b.Property<string>("RefreshToken")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("refresh_token");
 
                     b.Property<DateTime>("RefreshTokenExpiryTime")
@@ -270,13 +352,13 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                         .HasColumnName("superior_id");
 
                     b.Property<string>("TenantId")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
                         .HasColumnName("tenant_id");
 
                     b.Property<string>("TimeZoneId")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("time_zone_id");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -408,13 +490,13 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
                         .HasColumnName("login_provider");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
                         .HasColumnName("provider_key");
 
                     b.Property<string>("ProviderDisplayName")
@@ -435,6 +517,28 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                         .HasDatabaseName("ix_asp_net_user_logins_user_id");
 
                     b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserPasskey<string>", b =>
+                {
+                    b.Property<byte[]>("CredentialId")
+                        .HasMaxLength(1024)
+                        .HasColumnType("bytea")
+                        .HasColumnName("credential_id");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("CredentialId")
+                        .HasName("pk_asp_net_user_passkeys");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_asp_net_user_passkeys_user_id");
+
+                    b.ToTable("AspNetUserPasskeys", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -466,13 +570,13 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                         .HasColumnName("user_id");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
                         .HasColumnName("login_provider");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
                         .HasColumnName("name");
 
                     b.Property<string>("Value")
@@ -495,6 +599,18 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                         .HasConstraintName("fk_audit_trails_asp_net_users_user_id");
 
                     b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("CleanAspire.Domain.Entities.Stock", b =>
+                {
+                    b.HasOne("CleanAspire.Domain.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_stocks_products_product_id");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("CleanAspire.Domain.Identities.ApplicationUser", b =>
@@ -535,6 +651,60 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_asp_net_user_logins_asp_net_users_user_id");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserPasskey<string>", b =>
+                {
+                    b.HasOne("CleanAspire.Domain.Identities.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_asp_net_user_passkeys_asp_net_users_user_id");
+
+                    b.OwnsOne("Microsoft.AspNetCore.Identity.IdentityPasskeyData", "Data", b1 =>
+                        {
+                            b1.Property<byte[]>("IdentityUserPasskeyCredentialId");
+
+                            b1.Property<byte[]>("AttestationObject")
+                                .IsRequired();
+
+                            b1.Property<byte[]>("ClientDataJson")
+                                .IsRequired();
+
+                            b1.Property<DateTimeOffset>("CreatedAt");
+
+                            b1.Property<bool>("IsBackedUp");
+
+                            b1.Property<bool>("IsBackupEligible");
+
+                            b1.Property<bool>("IsUserVerified");
+
+                            b1.Property<string>("Name")
+                                .HasMaxLength(450);
+
+                            b1.Property<byte[]>("PublicKey")
+                                .IsRequired();
+
+                            b1.Property<long>("SignCount");
+
+                            b1.PrimitiveCollection<string>("Transports");
+
+                            b1.HasKey("IdentityUserPasskeyCredentialId");
+
+                            b1.ToTable("AspNetUserPasskeys");
+
+                            b1
+                                .ToJson("data")
+                                .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("IdentityUserPasskeyCredentialId")
+                                .HasConstraintName("fk_asp_net_user_passkeys_asp_net_user_passkeys_credential_id");
+                        });
+
+                    b.Navigation("Data")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>

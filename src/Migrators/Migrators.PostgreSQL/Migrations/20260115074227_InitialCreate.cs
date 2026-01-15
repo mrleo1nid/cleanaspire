@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CleanAspire.Migrators.PostgreSQL.Migrations
 {
     /// <inheritdoc />
-    public partial class initialCreate : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -31,19 +31,19 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                 columns: table => new
                 {
                     id = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
-                    nickname = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    provider = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    tenant_id = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    avatar = table.Column<byte[]>(type: "bytea", nullable: true),
-                    refresh_token = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    nickname = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    provider = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    tenant_id = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    avatar_url = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    refresh_token = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     refresh_token_expiry_time = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    time_zone_id = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    language_code = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    time_zone_id = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    language_code = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     superior_id = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
                     created = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    created_by = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    created_by = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     last_modified = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    last_modified_by = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    last_modified_by = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     user_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     normalized_user_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -52,7 +52,7 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                     password_hash = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
                     security_stamp = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
                     concurrency_stamp = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    phone_number = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    phone_number = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     phone_number_confirmed = table.Column<bool>(type: "boolean", nullable: false),
                     two_factor_enabled = table.Column<bool>(type: "boolean", nullable: false),
                     lockout_end = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
@@ -73,14 +73,14 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                 name: "products",
                 columns: table => new
                 {
-                    id = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
+                    id = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    sku = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
                     name = table.Column<string>(type: "character varying(80)", maxLength: 80, nullable: false),
+                    category = table.Column<string>(type: "text", nullable: false),
                     description = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
                     price = table.Column<decimal>(type: "numeric", nullable: false),
                     currency = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    quantity = table.Column<int>(type: "integer", nullable: false),
                     uom = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    image = table.Column<byte[]>(type: "bytea", nullable: true),
                     created = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     created_by = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
                     last_modified = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
@@ -89,6 +89,19 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_products", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "tenants",
+                columns: table => new
+                {
+                    id = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: false),
+                    name = table.Column<string>(type: "character varying(80)", maxLength: 80, nullable: false),
+                    description = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_tenants", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -137,8 +150,8 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    login_provider = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
-                    provider_key = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
+                    login_provider = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    provider_key = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     provider_display_name = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
                     user_id = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false)
                 },
@@ -147,6 +160,25 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                     table.PrimaryKey("pk_asp_net_user_logins", x => new { x.login_provider, x.provider_key });
                     table.ForeignKey(
                         name: "fk_asp_net_user_logins_asp_net_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserPasskeys",
+                columns: table => new
+                {
+                    credential_id = table.Column<byte[]>(type: "bytea", maxLength: 1024, nullable: false),
+                    user_id = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
+                    data = table.Column<string>(type: "jsonb", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_asp_net_user_passkeys", x => x.credential_id);
+                    table.ForeignKey(
+                        name: "fk_asp_net_user_passkeys_asp_net_users_user_id",
                         column: x => x.user_id,
                         principalTable: "AspNetUsers",
                         principalColumn: "id",
@@ -182,8 +214,8 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                 columns: table => new
                 {
                     user_id = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
-                    login_provider = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
-                    name = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
+                    login_provider = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    name = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     value = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true)
                 },
                 constraints: table =>
@@ -224,6 +256,30 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                         onDelete: ReferentialAction.SetNull);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "stocks",
+                columns: table => new
+                {
+                    id = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
+                    product_id = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    quantity = table.Column<int>(type: "integer", nullable: false),
+                    location = table.Column<string>(type: "character varying(12)", maxLength: 12, nullable: false),
+                    created = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    created_by = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    last_modified = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    last_modified_by = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_stocks", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_stocks_products_product_id",
+                        column: x => x.product_id,
+                        principalTable: "products",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "ix_asp_net_role_claims_role_id",
                 table: "AspNetRoleClaims",
@@ -243,6 +299,11 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_asp_net_user_logins_user_id",
                 table: "AspNetUserLogins",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_asp_net_user_passkeys_user_id",
+                table: "AspNetUserPasskeys",
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
@@ -276,6 +337,17 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                 table: "products",
                 column: "name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_stocks_product_id",
+                table: "stocks",
+                column: "product_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_tenants_name",
+                table: "tenants",
+                column: "name",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -291,6 +363,9 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                 name: "AspNetUserLogins");
 
             migrationBuilder.DropTable(
+                name: "AspNetUserPasskeys");
+
+            migrationBuilder.DropTable(
                 name: "AspNetUserRoles");
 
             migrationBuilder.DropTable(
@@ -300,13 +375,19 @@ namespace CleanAspire.Migrators.PostgreSQL.Migrations
                 name: "audit_trails");
 
             migrationBuilder.DropTable(
-                name: "products");
+                name: "stocks");
+
+            migrationBuilder.DropTable(
+                name: "tenants");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "products");
         }
     }
 }
