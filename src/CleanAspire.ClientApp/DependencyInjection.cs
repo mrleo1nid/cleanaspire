@@ -67,8 +67,6 @@ public static class DependencyInjection
         services.AddScoped<OnlineStatusInterop>();
         services.AddScoped<OfflineModeState>();
         services.AddScoped<IndexedDbCache>();
-        services.AddScoped<ProductCacheService>();
-        services.AddScoped<ProductServiceProxy>();
         services.AddScoped<OfflineSyncService>();
 
         // Configuration

@@ -6,7 +6,6 @@ using CleanAspire.Api.Client.FileManagement;
 using CleanAspire.Api.Client.ForgotPassword;
 using CleanAspire.Api.Client.Login;
 using CleanAspire.Api.Client.Manage;
-using CleanAspire.Api.Client.Products;
 using CleanAspire.Api.Client.Refresh;
 using CleanAspire.Api.Client.ResendConfirmationEmail;
 using CleanAspire.Api.Client.ResetPassword;
@@ -54,11 +53,6 @@ namespace CleanAspire.Api.Client
         public global::CleanAspire.Api.Client.Manage.ManageRequestBuilder Manage
         {
             get => new global::CleanAspire.Api.Client.Manage.ManageRequestBuilder(PathParameters, RequestAdapter);
-        }
-        /// <summary>The products property</summary>
-        public global::CleanAspire.Api.Client.Products.ProductsRequestBuilder Products
-        {
-            get => new global::CleanAspire.Api.Client.Products.ProductsRequestBuilder(PathParameters, RequestAdapter);
         }
         /// <summary>The refresh property</summary>
         public global::CleanAspire.Api.Client.Refresh.RefreshRequestBuilder Refresh

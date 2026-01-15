@@ -448,80 +448,89 @@ Stock
 #### ШАГ 2: УДАЛЕНИЕ
 
 #### Domain Layer
-- [ ] `src/CleanAspire.Domain/Entities/Stock.cs`
+- [x] `src/CleanAspire.Domain/Entities/Stock.cs`
   - Удалить сущность Stock
 
 #### Application Layer - Commands
-- [ ] `src/CleanAspire.Application/Features/Stocks/Commands/StockDispatchingCommand.cs`
+- [x] `src/CleanAspire.Application/Features/Stocks/Commands/StockDispatchingCommand.cs`
   - Удалить команду отправки запаса
 
-- [ ] `src/CleanAspire.Application/Features/Stocks/Commands/StockReceivingCommand.cs`
+- [x] `src/CleanAspire.Application/Features/Stocks/Commands/StockReceivingCommand.cs`
   - Удалить команду получения запаса
 
-- [ ] `src/CleanAspire.Application/Features/Stocks/Commands/` (папка)
+- [x] `src/CleanAspire.Application/Features/Stocks/Commands/` (папка)
   - Удалить всю папку Commands для Stocks
 
 #### Application Layer - Queries
-- [ ] `src/CleanAspire.Application/Features/Stocks/Queries/StocksWithPaginationQuery.cs`
+- [x] `src/CleanAspire.Application/Features/Stocks/Queries/StocksWithPaginationQuery.cs`
   - Удалить запрос с пагинацией
 
-- [ ] `src/CleanAspire.Application/Features/Stocks/Queries/` (папка)
+- [x] `src/CleanAspire.Application/Features/Stocks/Queries/` (папка)
   - Удалить всю папку Queries для Stocks
 
 #### Application Layer - DTOs
-- [ ] `src/CleanAspire.Application/Features/Stocks/DTOs/StockDto.cs`
+- [x] `src/CleanAspire.Application/Features/Stocks/DTOs/StockDto.cs`
   - Удалить DTO для запаса
 
-- [ ] `src/CleanAspire.Application/Features/Stocks/` (папка)
+- [x] `src/CleanAspire.Application/Features/Stocks/` (папка)
   - Удалить всю папку Features/Stocks
 
 #### Infrastructure Layer
-- [ ] `src/CleanAspire.Infrastructure/Persistence/Configurations/StockConfiguration.cs`
+- [x] `src/CleanAspire.Infrastructure/Persistence/Configurations/StockConfiguration.cs`
   - Удалить конфигурацию Entity Framework для Stock
+
+- [x] `src/CleanAspire.Infrastructure/Persistence/ApplicationDbContext.cs`
+  - Удалить DbSet<Stock> Stocks
+
+- [x] `src/CleanAspire.Application/Common/Interfaces/IApplicationDbContext.cs`
+  - Удалить DbSet<Stock> Stocks из интерфейса
 
 - [ ] Database Migration
   - Создать миграцию для удаления таблицы `Stocks`
 
 #### API Layer
-- [ ] `src/CleanAspire.Api/Endpoints/StockEndpointRegistrar.cs`
+- [x] `src/CleanAspire.Api/Endpoints/StockEndpointRegistrar.cs`
   - Удалить все endpoints для Stock:
     - `POST /stocks/dispatch`
     - `POST /stocks/receive`
     - `POST /stocks/pagination`
 
 #### Client (Frontend) - Generated API
-- [ ] `src/CleanAspire.ClientApp/Client/Models/StockDto.cs`
-  - Удалить generated модель StockDto
+- [x] `src/CleanAspire.ClientApp/Client/Models/StockDto.cs`
+  - Удалить generated модель StockDto (будет пересоздана при регенерации)
 
-- [ ] `src/CleanAspire.ClientApp/Client/Models/StocksWithPaginationQuery.cs`
-  - Удалить generated модель запроса с пагинацией
+- [x] `src/CleanAspire.ClientApp/Client/Models/StocksWithPaginationQuery.cs`
+  - Удалить generated модель запроса с пагинацией (будет пересоздана при регенерации)
 
-- [ ] `src/CleanAspire.ClientApp/Client/Stocks/` (папка, если существует)
+- [x] `src/CleanAspire.ClientApp/Client/Stocks/` (папка, если существует)
   - Удалить все generated API клиенты для Stocks
 
+- [x] `src/CleanAspire.ClientApp/Client/ApiClient.cs`
+  - Удалить ссылку на Stocks property
+
 #### Client (Frontend) - UI Pages
-- [ ] `src/CleanAspire.ClientApp/Pages/Stocks/Index.razor`
+- [x] `src/CleanAspire.ClientApp/Pages/Stocks/Index.razor`
   - Удалить главную страницу управления запасами
 
-- [ ] `src/CleanAspire.ClientApp/Pages/Stocks/StockDialog.razor`
+- [x] `src/CleanAspire.ClientApp/Pages/Stocks/StockDialog.razor`
   - Удалить диалог для операций со складом
 
-- [ ] `src/CleanAspire.ClientApp/Pages/Stocks/` (папка)
+- [x] `src/CleanAspire.ClientApp/Pages/Stocks/` (папка)
   - Удалить всю папку Stocks
 
 #### Application Layer - Validators
-- [ ] `src/CleanAspire.Application/Features/Stocks/Validators/StockDispatchingCommandValidator.cs`
+- [x] `src/CleanAspire.Application/Features/Stocks/Validators/StockDispatchingCommandValidator.cs`
   - Удалить валидатор отправки
 
-- [ ] `src/CleanAspire.Application/Features/Stocks/Validators/StockReceivingCommandValidator.cs`
+- [x] `src/CleanAspire.Application/Features/Stocks/Validators/StockReceivingCommandValidator.cs`
   - Удалить валидатор получения
 
 #### Infrastructure Layer - Seed Data
-- [ ] `src/CleanAspire.Infrastructure/Persistence/Seed/ApplicationDbContextInitializer.cs`
+- [x] `src/CleanAspire.Infrastructure/Persistence/Seed/ApplicationDbContextInitializer.cs`
   - Удалить seed данные для Stocks
 
 #### Tests
-- [ ] `tests/CleanAspire.Tests/StockEndpointTests.cs`
+- [x] `tests/CleanAspire.Tests/StockEndpointTests.cs`
   - Удалить интеграционные тесты для Stock endpoints
 
 ---
@@ -896,16 +905,16 @@ Stock
 - [ ] Завершить документирование Stock в IMPLEMENTATION_REFERENCE.md
 
 **3.2 Удаление (следовать чекбоксам из раздела 2.2)**
-- [ ] Frontend UI Pages
-- [ ] Frontend Generated API clients
-- [ ] Application Layer (Commands, Queries, DTOs, Validators)
-- [ ] API Endpoints
-- [ ] Infrastructure (Configuration, Seed data)
-- [ ] Domain Entity
-- [ ] Tests
+- [x] Frontend UI Pages
+- [x] Frontend Generated API clients
+- [x] Application Layer (Commands, Queries, DTOs, Validators)
+- [x] API Endpoints
+- [x] Infrastructure (Configuration, Seed data, DbSet)
+- [x] Domain Entity
+- [x] Tests
 - [ ] Создать и применить Database Migration
 
-**Commit:** `git commit -m "feat: remove Stock entity and related functionality"`
+**Commit:** `git commit -m "feat: remove Stock entity and related functionality"` ✅
 
 **Проверка:**
 - [ ] Компиляция проекта

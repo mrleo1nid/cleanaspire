@@ -34,11 +34,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<AuditTrail> AuditTrails { get; set; } = null!;
 
     /// <summary>
-    /// Gets or sets the Products DbSet.
-    /// </summary>
-    public DbSet<Product> Products { get; set; } = null!;
-
-    /// <summary>
     /// Configures the schema needed for the identity framework.
     /// </summary>
     /// <param name="builder">The builder being used to construct the model for this context.</param>

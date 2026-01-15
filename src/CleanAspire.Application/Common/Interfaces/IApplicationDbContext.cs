@@ -10,11 +10,6 @@ namespace CleanAspire.Application.Common.Interfaces;
 public interface IApplicationDbContext
 {
     /// <summary>
-    /// Gets or sets the Products DbSet.
-    /// </summary>
-    DbSet<Product> Products { get; set; }
-
-    /// <summary>
     /// Gets or sets the AuditTrails DbSet.
     /// </summary>
     DbSet<AuditTrail> AuditTrails { get; set; }
