@@ -16,8 +16,10 @@ var redisCache = builder.AddRedis("rediscache");
 
 // Blazor WebAssembly Standalone project - declare first to get endpoint reference
 var clientWebWasmProject = builder
-    .AddProject<Projects.CleanAspire_ClientAppHost>("blazorwasm")
-    .WithExternalHttpEndpoints();
+    .AddProject("blazorwasm", "../CleanAspire.ClientAppHost/CleanAspire.ClientAppHost.csproj")
+    .WithExplicitStart() // Requires manual start from Aspire Dashboard
+    .WithExternalHttpEndpoints()
+    .WithEnvironment("ASPNETCORE_LAUNCH_BROWSER", "true"); // Ensure browser launches automatically
 
 var apiService = builder
     .AddProject<Projects.CleanAspire_Api>("apiservice")

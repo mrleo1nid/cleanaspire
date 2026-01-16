@@ -3,6 +3,7 @@
     "CleanAspire.ClientAppHost": {
       "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "https://localhost:49234",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
