@@ -5,7 +5,7 @@
 // Purpose:
 // 1. **Navigation Menu Structure**:
 //    - Provides a clear and organized layout of menu items for easy access to different sections of the application.
-//    - Supports submenus for grouping related functionality (e.g., Orders, Reports, Help).
+//    - Supports submenus for grouping related functionality (e.g., Orders).
 
 // 2. **User Experience**:
 //    - Enhances the user experience by displaying icons (`StartIcon`, `EndIcon`) and descriptions for each menu item.
@@ -17,7 +17,7 @@ namespace CleanAspire.ClientApp.Services.Navigation;
 
 /// <summary>
 /// Represents the default navigation menu configuration for the application.
-/// Includes sections like Application, Reports, and Help with nested submenus.
+/// Includes sections like Application with nested submenus.
 /// </summary>
 public static class NavbarMenu
 {
@@ -50,52 +50,6 @@ public static class NavbarMenu
                             Description = "Track the shipment details of orders.",
                         },
                     },
-                },
-            },
-        },
-        new MenuItem
-        {
-            Label = "Reports",
-            StartIcon = Icons.Material.Filled.Dashboard,
-            EndIcon = Icons.Material.Filled.KeyboardArrowDown,
-            SubItems = new List<MenuItem>
-            {
-                new MenuItem
-                {
-                    Label = "Overview",
-                    Href = "/reports/overview",
-                    Status = PageStatus.Completed,
-                    Description = "View an overview of all reports.",
-                },
-                new MenuItem
-                {
-                    Label = "Statistics",
-                    Href = "/reports/statistics",
-                    Status = PageStatus.New,
-                    Description = "Analyze detailed statistics for performance tracking.",
-                },
-                new MenuItem
-                {
-                    Label = "Activity Log",
-                    Href = "/reports/activitylog",
-                    Status = PageStatus.Completed,
-                    Description = "View the activity log for user actions.",
-                },
-            },
-        },
-        new MenuItem
-        {
-            Label = "Help",
-            StartIcon = Icons.Material.Filled.Help,
-            EndIcon = Icons.Material.Filled.KeyboardArrowDown,
-            SubItems = new List<MenuItem>
-            {
-                new MenuItem
-                {
-                    Label = "Documentation",
-                    Href = "/help/documentation",
-                    Status = PageStatus.Completed,
-                    Description = "Access the user and developer documentation.",
                 },
             },
         },
